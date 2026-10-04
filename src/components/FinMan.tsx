@@ -2,8 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FIN_MAN_DATA,
   FIN_MAN_SECTIONS,
+  TOPIC_READ_MS,
+  topicById,
   type FinManQuestion,
   type FinManSectionId,
+  type FinManTopic,
 } from '../data/finManData';
 import { getFinManSounds } from '../lib/finManSounds';
 
@@ -146,6 +149,26 @@ interface HudState {
   lives: number;
   section: FinManSectionId;
   sectionName: string;
+}
+
+interface TopicBanner {
+  index: number;
+  total: number;
+  title: string;
+  brief: string;
+  secondsLeft: number;
+}
+
+function bannerFor(section: FinManSectionId, index: number, elapsedMs: number): TopicBanner {
+  const topics = FIN_MAN_DATA.levels[section].topics;
+  const topic = topics[index % topics.length];
+  return {
+    index: index % topics.length,
+    total: topics.length,
+    title: topic.title,
+    brief: topic.brief,
+    secondsLeft: Math.max(1, Math.ceil((TOPIC_READ_MS - elapsedMs) / 1000)),
+  };
 }
 
 function tileCenter(col: number, row: number) {
@@ -683,8 +706,14 @@ export default function FinMan() {
   const stateRef = useRef<GameState>(freshState());
   const keysRef = useRef<Record<string, boolean>>({});
   const lastInputDirRef = useRef<Dir>('left');
-  const bannerPendingRef = useRef('');
   const bannerFlushRef = useRef(0);
+  const topicIndexRef = useRef(0);
+  const topicClockRef = useRef(0);
+  const seenTopicsRef = useRef<Set<string>>(new Set());
+  const reviewQueueRef = useRef<FinManTopic[]>([]);
+  const reviewActiveRef = useRef(false);
+  const reviewStepLock = useRef(false);
+  const onMazeClearedRef = useRef<() => void>(() => {});
   const overlayRef = useRef<OverlayMode>('none');
   const pendingSecAuditRef = useRef(false);
   const wrongLoseLifeRef = useRef(false);
@@ -697,7 +726,10 @@ export default function FinMan() {
     section: '1',
     sectionName: FIN_MAN_DATA.levels['1'].name,
   });
-  const [flashcardBanner, setFlashcardBanner] = useState('Eat pellets to reveal SIE flashcards…');
+  const [topicBanner, setTopicBanner] = useState<TopicBanner>(() => bannerFor('1', 0, 0));
+  const [reviewTopic, setReviewTopic] = useState<FinManTopic | null>(null);
+  const [reviewLeft, setReviewLeft] = useState(0);
+  const [reviewSeconds, setReviewSeconds] = useState(20);
   const [overlay, setOverlay] = useState<OverlayMode>('none');
   const [activeQuestion, setActiveQuestion] = useState<FinManQuestion | null>(null);
   const [overlayTitle, setOverlayTitle] = useState('');
@@ -728,6 +760,16 @@ export default function FinMan() {
     setOverlayTitle(title);
     setSelectedOption(null);
     setWrongReview(false);
+    const topic = topicById(s.section, question.topicId);
+    if (topic) {
+      const topics = FIN_MAN_DATA.levels[s.section].topics;
+      const idx = topics.findIndex((item) => item.id === topic.id);
+      if (idx >= 0) {
+        topicIndexRef.current = idx;
+        topicClockRef.current = 0;
+        setTopicBanner(bannerFor(s.section, idx, 0));
+      }
+    }
     if (mode === 'checkpoint') sounds.playCheckpoint();
     if (mode === 'sec_audit') sounds.playDeath();
   }, [sounds]);
@@ -825,26 +867,102 @@ export default function FinMan() {
     syncHud(s);
   }, [syncHud]);
 
+  const finishSection = useCallback(() => {
+    const s = stateRef.current;
+    advanceSection(s);
+    seenTopicsRef.current = new Set();
+    topicIndexRef.current = 0;
+    topicClockRef.current = 0;
+    if (s.phase !== 'complete') {
+      s.phase = 'playing';
+      s.running = true;
+      setTopicBanner(bannerFor(s.section, 0, 0));
+    }
+  }, [advanceSection]);
+
+  const advanceReview = useCallback(() => {
+    if (reviewStepLock.current) return;
+    reviewStepLock.current = true;
+    const current = reviewQueueRef.current[0];
+    if (current) seenTopicsRef.current.add(current.id);
+    reviewQueueRef.current = reviewQueueRef.current.slice(1);
+    const next = reviewQueueRef.current[0];
+    if (next) {
+      setReviewTopic(next);
+      setReviewLeft(reviewQueueRef.current.length);
+      setReviewSeconds(20);
+      reviewStepLock.current = false;
+      return;
+    }
+    reviewActiveRef.current = false;
+    setReviewTopic(null);
+    setReviewLeft(0);
+    finishSection();
+    reviewStepLock.current = false;
+  }, [finishSection]);
+
+  useEffect(() => {
+    if (!reviewTopic) return;
+    const started = performance.now();
+    const tick = window.setInterval(() => {
+      const left = Math.max(0, 20 - Math.floor((performance.now() - started) / 1000));
+      setReviewSeconds(left);
+    }, 250);
+    const done = window.setTimeout(() => advanceReview(), TOPIC_READ_MS);
+    return () => {
+      window.clearInterval(tick);
+      window.clearTimeout(done);
+    };
+  }, [reviewTopic, advanceReview]);
+
   const startGame = useCallback(() => {
     wrongLoseLifeRef.current = false;
     const s = freshState('1');
     stateRef.current = s;
     overlayRef.current = 'none';
     pendingSecAuditRef.current = false;
+    reviewActiveRef.current = false;
+    reviewQueueRef.current = [];
+    reviewStepLock.current = false;
+    seenTopicsRef.current = new Set();
+    topicIndexRef.current = 0;
+    topicClockRef.current = 0;
+    setReviewTopic(null);
+    setReviewLeft(0);
+    setTopicBanner(bannerFor('1', 0, 0));
     setOverlay('none');
     setActiveQuestion(null);
     setWrongReview(false);
     setWrongBorder(false);
     setSelectedOption(null);
     setStatusMsg('');
-    setGameMsg('Use arrow keys or WASD. Eat dots, hit checkpoints, dodge market risks!');
-    setFlashcardBanner('Eat pellets to reveal SIE flashcards…');
+    setGameMsg('Use arrow keys or WASD. Each subject stays up for 20 seconds.');
     setEndPhase('none');
     syncHud(s);
     sounds.unlock();
     sounds.playGameStart();
     requestAnimationFrame(() => canvasRef.current?.focus());
   }, [syncHud, sounds]);
+
+  onMazeClearedRef.current = () => {
+    const s = stateRef.current;
+    if (reviewActiveRef.current || overlayRef.current !== 'none') return;
+    const topics = FIN_MAN_DATA.levels[s.section].topics;
+    const unseen = topics.filter((topic) => !seenTopicsRef.current.has(topic.id));
+    if (unseen.length > 0) {
+      s.running = false;
+      s.phase = 'paused';
+      reviewActiveRef.current = true;
+      reviewQueueRef.current = unseen;
+      reviewStepLock.current = false;
+      setReviewLeft(unseen.length);
+      setReviewSeconds(20);
+      setReviewTopic(unseen[0]);
+      setGameMsg(`Section clear. ${unseen.length} subject${unseen.length === 1 ? '' : 's'} still to cover — 20 seconds each.`);
+      return;
+    }
+    finishSection();
+  };
 
   useEffect(() => {
     startGame();
@@ -898,6 +1016,18 @@ export default function FinMan() {
       const s = stateRef.current;
       if (s.running && s.phase === 'playing') {
         s.gameTime += elapsed;
+        const topics = FIN_MAN_DATA.levels[s.section].topics;
+        topicClockRef.current += elapsed;
+        if (topicClockRef.current >= TOPIC_READ_MS) {
+          const shown = topics[topicIndexRef.current % topics.length];
+          seenTopicsRef.current.add(shown.id);
+          topicClockRef.current = 0;
+          topicIndexRef.current = (topicIndexRef.current + 1) % topics.length;
+        }
+        if (now - bannerFlushRef.current > 200) {
+          bannerFlushRef.current = now;
+          setTopicBanner(bannerFor(s.section, topicIndexRef.current, topicClockRef.current));
+        }
       }
 
       if (!s.running) {
@@ -950,13 +1080,6 @@ export default function FinMan() {
             s.score += DOT_SCORE;
             sounds.playWaka();
           }
-          const cards = FIN_MAN_DATA.levels[s.section].flashcards;
-          const card = cards[Math.floor(Math.random() * cards.length)];
-          bannerPendingRef.current = `${card.term}: ${card.def}`;
-          if (now - bannerFlushRef.current > 200) {
-            bannerFlushRef.current = now;
-            setFlashcardBanner(bannerPendingRef.current);
-          }
         }
 
         if (cell?.base === 3) {
@@ -964,8 +1087,13 @@ export default function FinMan() {
           if (!s.visitedCheckpoints.has(cpKey)) {
             s.visitedCheckpoints.add(cpKey);
             const questions = FIN_MAN_DATA.levels[s.section].questions;
-            const q = questions[s.visitedCheckpoints.size % questions.length];
-            pauseForQuestion('checkpoint', q, `Question Checkpoint (${s.visitedCheckpoints.size}/${countCheckpoints()})`);
+            const q = questions[(s.visitedCheckpoints.size - 1) % questions.length];
+            const topic = topicById(s.section, q.topicId);
+            pauseForQuestion(
+              'checkpoint',
+              q,
+              `Checkpoint ${s.visitedCheckpoints.size}/${countCheckpoints()}${topic ? ` — ${topic.title}` : ''}`,
+            );
           }
         }
       }
@@ -1031,21 +1159,18 @@ export default function FinMan() {
             pendingSecAuditRef.current = true;
             s.running = false;
             const q = pickSectionQuestion(s.section, s.score + s.lives * 17);
-            pauseForQuestion('sec_audit', q, 'SEC Audit — Save Your Life!');
+            const topic = topicById(s.section, q.topicId);
+            pauseForQuestion('sec_audit', q, `SEC Audit — Save Your Life!${topic ? ` — ${topic.title}` : ''}`);
             pendingSecAuditRef.current = false;
           }
         }
       }
 
-      if (dotsRemaining(s.tiles) === 0) {
-        advanceSection(s);
+      if (dotsRemaining(s.tiles) === 0 && overlayRef.current === 'none' && !reviewActiveRef.current) {
+        onMazeClearedRef.current();
       }
 
       s.frame += 1;
-      if (bannerPendingRef.current && now - bannerFlushRef.current > 200) {
-        bannerFlushRef.current = now;
-        setFlashcardBanner(bannerPendingRef.current);
-      }
       if (s.frame % 15 === 0) syncHud(s);
 
       drawMaze(ctx, s.tiles, s.frame);
@@ -1058,12 +1183,12 @@ export default function FinMan() {
 
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [pauseForQuestion, advanceSection, syncHud, sounds]);
+  }, [pauseForQuestion, syncHud, sounds]);
 
   return (
     <div className="page finman-page">
       <h1>FIN-MAN</h1>
-      <p className="subtitle">Pac-Man meets SIE active recall — dodge market risks, eat pellets, pass checkpoints &amp; SEC audits.</p>
+      <p className="subtitle">Same maze and ghosts. Every SIE subject gets a 20-second brief, then a checkpoint question.</p>
 
       <div className={`finman-container ${wrongBorder ? 'finman-wrong' : ''}`}>
         <div className="finman-hud">
@@ -1073,7 +1198,18 @@ export default function FinMan() {
         </div>
 
         <div id="flashcard-banner" className="finman-flashcard-banner" aria-live="polite">
-          {flashcardBanner}
+          <div className="finman-topic-meta">
+            <span>Subject {topicBanner.index + 1} of {topicBanner.total}</span>
+            <span>{topicBanner.secondsLeft}s</span>
+          </div>
+          <strong>{topicBanner.title}</strong>
+          <p>{topicBanner.brief}</p>
+          <div className="finman-topic-track" aria-hidden="true">
+            <div
+              className="finman-topic-fill"
+              style={{ width: `${((20 - topicBanner.secondsLeft) / 20) * 100}%` }}
+            />
+          </div>
         </div>
 
         <div className="finman-stage">
@@ -1094,6 +1230,11 @@ export default function FinMan() {
             <div className="finman-overlay" role="dialog" aria-modal="true">
               <div className="finman-modal card">
                 <h2>{overlayTitle}</h2>
+                {topicById(stateRef.current.section, activeQuestion.topicId) && (
+                  <p className="finman-brief">
+                    {topicById(stateRef.current.section, activeQuestion.topicId)?.brief}
+                  </p>
+                )}
                 <p className="finman-question">{activeQuestion.text}</p>
                 <div className="finman-options">
                   {activeQuestion.opts.map((opt, i) => {
@@ -1132,7 +1273,21 @@ export default function FinMan() {
             </div>
           )}
 
-          {endPhase !== 'none' && overlay === 'none' && (
+          {reviewTopic && overlay === 'none' && (
+            <div className="finman-overlay" role="dialog" aria-modal="true">
+              <div className="finman-modal card">
+                <h2>Cover the rest of this section</h2>
+                <p className="finman-read-timer">{reviewSeconds}s · {reviewLeft} subject{reviewLeft === 1 ? '' : 's'} left</p>
+                <p className="finman-topic-title">{reviewTopic.title}</p>
+                <p className="finman-brief">{reviewTopic.brief}</p>
+                <button type="button" className="btn btn-primary finman-continue" onClick={advanceReview}>
+                  Next subject
+                </button>
+              </div>
+            </div>
+          )}
+
+          {endPhase !== 'none' && overlay === 'none' && !reviewTopic && (
             <div className="finman-end-overlay">
               <p>{gameMsg}</p>
               <button type="button" className="btn btn-primary" onClick={startGame}>Play Again</button>
@@ -1146,8 +1301,9 @@ export default function FinMan() {
 
       <div className="card finman-legend">
         <p><strong>Ghosts:</strong> 🔴 Inflation (direct chase) · 🩷 Interest Rate (intercept) · 🩵 Liquidity (corner patrol when ahead) · 🟠 Regulatory (chaotic) — eaten ghosts wait in the pen ~1.4s before re-entering.</p>
-        <p><strong>Checkpoints:</strong> {countCheckpoints()} gold gateways per section trigger unique SIE questions.</p>
-        <p><strong>Controls:</strong> Arrow keys or WASD to move the Bull 🐂 · Power pellets turn ghosts vulnerable · Checkpoints &amp; SEC audits pause for MCQs.</p>
+        <p><strong>Subjects:</strong> The bar above the maze holds each outline topic for 20 seconds, then moves to the next. Clearing a section reviews any topic you have not finished.</p>
+        <p><strong>Checkpoints:</strong> {countCheckpoints()} gold gateways per section still stop you for a question. The question pool now covers that section’s outline.</p>
+        <p><strong>Controls:</strong> Arrow keys or WASD to move the Bull 🐂 · Power pellets turn ghosts vulnerable · Checkpoints and SEC audits pause for questions.</p>
         <p><strong>Sound:</strong> Classic arcade waka-waka, power pellet, ghost, and death effects — click the maze or press a key once to enable audio.</p>
         <button type="button" className="btn" onClick={startGame}>New Game</button>
       </div>

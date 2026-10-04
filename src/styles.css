@@ -1591,13 +1591,55 @@ body {
 .finman-flashcard-banner {
   background: linear-gradient(90deg, #0f172a, #1e3a8a);
   color: #e2e8f0;
-  padding: 0.55rem 0.85rem;
+  padding: 0.65rem 0.85rem 0.55rem;
   border-radius: 6px;
-  font-size: 0.88rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
   margin-bottom: 0.75rem;
-  min-height: 2.2rem;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.finman-flashcard-banner p {
+  margin: 0;
+}
+
+.finman-topic-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #93c5fd;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.finman-topic-track {
+  height: 4px;
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.finman-topic-fill {
+  height: 100%;
+  background: #38bdf8;
+}
+
+.finman-topic-title {
+  margin: 0.2rem 0;
+  font-weight: 700;
+}
+
+.finman-modal .finman-brief {
+  margin: 0.35rem 0 0.9rem;
+  padding: 0.65rem 0.75rem;
+  background: #f8fafc;
+  border-left: 4px solid var(--primary);
+  color: var(--text);
+  line-height: 1.45;
+  font-size: 0.9rem;
 }
 
 .finman-stage {
