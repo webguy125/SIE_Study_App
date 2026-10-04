@@ -33,6 +33,9 @@ const GHOST_RELEASE_STAGGER_MS = 500;
 const GHOST_REENTER_PEN_MS = 1400;
 const GHOST_RESET_BASE_MS = 900;
 const GHOST_RESET_STAGGER_MS = 400;
+/** After a catch, keep every ghost in the pen long enough to answer and move away. */
+const AUDIT_JAIL_BASE_MS = 2500;
+const AUDIT_JAIL_STAGGER_MS = 600;
 const POWER_MS = 8000;
 
 const LOW_SCORE_INKY = 600;
@@ -401,22 +404,6 @@ function releaseGhostFromPen(g: Ghost): void {
   g.dir = 'up';
 }
 
-function scatterGhosts(ghosts: Ghost[]): void {
-  const corners = [
-    tileCenter(1, 1),
-    tileCenter(17, 1),
-    tileCenter(1, 19),
-    tileCenter(17, 19),
-  ];
-  ghosts.forEach((g, i) => {
-    const c = corners[i % corners.length];
-    g.x = c.x;
-    g.y = c.y;
-    g.dir = i % 2 === 0 ? 'right' : 'left';
-    g.mode = 'chase';
-  });
-}
-
 function makeGhosts(gameTime: number): Ghost[] {
   const ghosts: Ghost[] = [
     { id: 'blinky', name: 'Blinky', risk: 'Inflation Risk', color: '#ef4444', emoji: '🔴', x: 0, y: 0, dir: 'up', mode: 'house', releaseAt: 0, penEnteredAt: 0 },
@@ -541,9 +528,14 @@ function chooseGhostDir(
   return best;
 }
 
-function resetGhostsToPen(ghosts: Ghost[], gameTime: number): Ghost[] {
+function resetGhostsToPen(
+  ghosts: Ghost[],
+  gameTime: number,
+  baseMs = GHOST_RESET_BASE_MS,
+  staggerMs = GHOST_RESET_STAGGER_MS,
+): Ghost[] {
   ghosts.forEach((g, i) => {
-    placeGhostInPen(g, gameTime, GHOST_RESET_BASE_MS + i * GHOST_RESET_STAGGER_MS);
+    placeGhostInPen(g, gameTime, baseMs + i * staggerMs);
   });
   return ghosts;
 }
@@ -785,6 +777,7 @@ export default function FinMan() {
     setSelectedOption(null);
     setStatusMsg('');
     overlayRef.current = 'none';
+    pendingSecAuditRef.current = false;
     wrongLoseLifeRef.current = false;
 
     if (loseLife) {
@@ -795,7 +788,7 @@ export default function FinMan() {
         setEndPhase('game_over');
         setGameMsg('Game Over — review weak sections and try again.');
       } else {
-        resetGhostsToPen(s.ghosts, s.gameTime);
+        resetGhostsToPen(s.ghosts, s.gameTime, AUDIT_JAIL_BASE_MS, AUDIT_JAIL_STAGGER_MS);
         s.phase = 'playing';
         s.running = true;
         setGameMsg('SEC Audit failed — life lost. Ghosts reset.');
@@ -829,8 +822,8 @@ export default function FinMan() {
     if (index === q.correct) {
       sounds.playCorrect();
       if (overlayRef.current === 'sec_audit') {
-        scatterGhosts(s.ghosts);
-        setGameMsg('SEC Audit passed — life saved!');
+        resetGhostsToPen(s.ghosts, s.gameTime, AUDIT_JAIL_BASE_MS, AUDIT_JAIL_STAGGER_MS);
+        setGameMsg('SEC Audit passed — life saved! Risks stay in the pen.');
       } else {
         s.score += CHECKPOINT_SCORE;
         setGameMsg('Checkpoint cleared!');
@@ -838,6 +831,7 @@ export default function FinMan() {
       s.phase = 'playing';
       s.running = true;
       overlayRef.current = 'none';
+      pendingSecAuditRef.current = false;
       setOverlay('none');
       setActiveQuestion(null);
       setSelectedOption(null);
@@ -1151,17 +1145,18 @@ export default function FinMan() {
 
         if (dist(g.x, g.y, s.player.x, s.player.y) < TILE * 0.55) {
           if (frightenedActive && g.mode === 'frightened') {
-            g.mode = 'eaten';
+            placeGhostInPen(g, s.gameTime, GHOST_REENTER_PEN_MS);
             s.score += GHOST_SCORE;
             sounds.playEatGhost();
-            setGameMsg(`${g.risk} neutralized (+${GHOST_SCORE})`);
+            setGameMsg(`${g.risk} sent back to the pen (+${GHOST_SCORE})`);
           } else if (!pendingSecAuditRef.current && overlayRef.current === 'none') {
+            resetGhostsToPen(s.ghosts, s.gameTime, AUDIT_JAIL_BASE_MS, AUDIT_JAIL_STAGGER_MS);
             pendingSecAuditRef.current = true;
             s.running = false;
             const q = pickSectionQuestion(s.section, s.score + s.lives * 17);
             const topic = topicById(s.section, q.topicId);
             pauseForQuestion('sec_audit', q, `SEC Audit — Save Your Life!${topic ? ` — ${topic.title}` : ''}`);
-            pendingSecAuditRef.current = false;
+            break;
           }
         }
       }
@@ -1300,7 +1295,7 @@ export default function FinMan() {
       </div>
 
       <div className="card finman-legend">
-        <p><strong>Ghosts:</strong> 🔴 Inflation (direct chase) · 🩷 Interest Rate (intercept) · 🩵 Liquidity (corner patrol when ahead) · 🟠 Regulatory (chaotic) — eaten ghosts wait in the pen ~1.4s before re-entering.</p>
+        <p><strong>Ghosts:</strong> 🔴 Inflation (direct chase) · 🩷 Interest Rate (intercept) · 🩵 Liquidity (corner patrol when ahead) · 🟠 Regulatory (chaotic). A catch sends every ghost back to the pen before the question. Eating one sends that ghost straight to the pen.</p>
         <p><strong>Subjects:</strong> The bar above the maze holds each outline topic for 20 seconds, then moves to the next. Clearing a section reviews any topic you have not finished.</p>
         <p><strong>Checkpoints:</strong> {countCheckpoints()} gold gateways per section still stop you for a question. The question pool now covers that section’s outline.</p>
         <p><strong>Controls:</strong> Arrow keys or WASD to move the Bull 🐂 · Power pellets turn ghosts vulnerable · Checkpoints and SEC audits pause for questions.</p>
