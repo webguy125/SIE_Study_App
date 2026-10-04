@@ -1,0 +1,1442 @@
+[
+  {
+    "id": "FC-001",
+    "front": "SIE Exam: dividends",
+    "back": "Quarterly dividend = shares × dividend per share = 200 × $0.50 = $100.",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "dividends",
+      "common stock",
+      "equity securities"
+    ]
+  },
+  {
+    "id": "FC-002",
+    "front": "SIE Exam: stock split",
+    "back": "A 3-for-2 split increases shares by 50% (100 → 150) and reduces price proportionally ($60 × 100/150 = $40).",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "stock split",
+      "equity securities",
+      "shareholder equity"
+    ]
+  },
+  {
+    "id": "FC-003",
+    "front": "SIE Exam: voting rights",
+    "back": "Common stockholders generally receive voting rights.",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "voting rights",
+      "common stock",
+      "preferred stock"
+    ]
+  },
+  {
+    "id": "FC-004",
+    "front": "SIE Exam: cumulative preferred",
+    "back": "Cumulative preferred must receive all missed dividends ($4 × 2 = $8) plus the current year's $4 preferred dividend = $12, before common shareholders receive the declared dividend.",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "cumulative preferred",
+      "dividends",
+      "equity securities"
+    ]
+  },
+  {
+    "id": "FC-005",
+    "front": "SIE Exam: ADR",
+    "back": "ADRs represent ownership in foreign companies and trade in U.S. markets in dollars, simplifying access to non-U.S. equities.",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "ADR",
+      "foreign securities",
+      "equity securities"
+    ]
+  },
+  {
+    "id": "FC-006",
+    "front": "SIE Exam: growth stock",
+    "back": "Growth companies typically retain earnings to finance expansion, acquisitions, or R&D instead of distributing large dividends.",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "growth stock",
+      "retained earnings",
+      "equity securities"
+    ]
+  },
+  {
+    "id": "FC-007",
+    "front": "SIE Exam: warrants",
+    "back": "Warrants give the right to buy stock from the company at a set price, similar to calls and rights.",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "warrants",
+      "options basics",
+      "equity securities"
+    ]
+  },
+  {
+    "id": "FC-008",
+    "front": "SIE Exam: treasury stock",
+    "back": "Treasury stock is previously issued shares reacquired by the issuing corporation, reducing shares outstanding in the market.",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "treasury stock",
+      "share repurchase",
+      "equity securities"
+    ]
+  },
+  {
+    "id": "FC-009",
+    "front": "SIE Exam: rights offering",
+    "back": "Rights offerings allow current owners to buy more shares (usually at a discount) to avoid dilution when the company issues new stock.",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "rights offering",
+      "dilution",
+      "primary market"
+    ]
+  },
+  {
+    "id": "FC-010",
+    "front": "SIE Exam: liquidation priority",
+    "back": "In liquidation, secured creditors and bondholders are paid before preferred shareholders, who are paid before common shareholders.",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "liquidation priority",
+      "capital structure",
+      "equity securities"
+    ]
+  },
+  {
+    "id": "FC-011",
+    "front": "SIE Exam: coupon",
+    "back": "Annual coupon = par × coupon rate = $1,000 × 6% = $60.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "coupon",
+      "debt securities",
+      "bond interest"
+    ]
+  },
+  {
+    "id": "FC-012",
+    "front": "SIE Exam: current yield",
+    "back": "Current yield = annual coupon / market price = $50 / $900 ≈ 5.56%.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "current yield",
+      "debt securities",
+      "bond calculations"
+    ]
+  },
+  {
+    "id": "FC-013",
+    "front": "SIE Exam: interest rate risk",
+    "back": "Bond prices and interest rates move inversely.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "interest rate risk",
+      "yield and bond price relationship",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "FC-014",
+    "front": "SIE Exam: premium bond",
+    "back": "Investors pay above par for bonds paying more than prevailing rates, creating a premium price.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "premium bond",
+      "coupon rate",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "FC-015",
+    "front": "SIE Exam: credit risk",
+    "back": "Credit downgrades increase default risk perception, typically lowering bond prices (raising yields).",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "credit risk",
+      "bond ratings",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "FC-016",
+    "front": "SIE Exam: convertible bonds",
+    "back": "Convertible bonds include an embedded option to convert into common stock at a predetermined ratio.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "convertible bonds",
+      "hybrid securities",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "FC-017",
+    "front": "SIE Exam: nominal yield",
+    "back": "Nominal yield = annual coupon / par value, regardless of current market price.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "nominal yield",
+      "coupon yield",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "FC-018",
+    "front": "SIE Exam: zero coupon bond",
+    "back": "Zero-coupon bonds are sold at a deep discount and pay par at maturity; there are no interim coupon payments.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "zero-coupon bond",
+      "discount bond",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "FC-019",
+    "front": "SIE Exam: debt securities",
+    "back": "Current yield = $70 / $1,050 ≈ 6.67%, which is less than the 7% coupon because the bond was bought at a premium.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "current yield",
+      "premium bond",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "FC-020",
+    "front": "SIE Exam: debentures",
+    "back": "Debentures are unsecured debt obligations relying on the issuer's overall financial strength.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "debentures",
+      "unsecured debt",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "FC-021",
+    "front": "SIE Exam: GO bonds",
+    "back": "GO bonds are secured by the municipality's ability to levy taxes, not by a specific project's revenue.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "GO bonds",
+      "municipal bonds",
+      "tax backing"
+    ]
+  },
+  {
+    "id": "FC-022",
+    "front": "SIE Exam: revenue bonds",
+    "back": "Revenue bondholders depend on tolls, fees, rents, or other project-specific income streams.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "revenue bonds",
+      "municipal bonds",
+      "project finance"
+    ]
+  },
+  {
+    "id": "FC-023",
+    "front": "SIE Exam: tax exempt interest",
+    "back": "Most muni interest is federally tax-exempt, a key benefit for investors in higher tax brackets.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "tax-exempt interest",
+      "municipal bonds",
+      "tax considerations"
+    ]
+  },
+  {
+    "id": "FC-024",
+    "front": "SIE Exam: taxable equivalent yield",
+    "back": "Taxable-equivalent yield = muni yield / (1 - tax rate) = 3% / 0.63 ≈ 4.76%.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "taxable-equivalent yield",
+      "municipal bonds",
+      "tax considerations"
+    ]
+  },
+  {
+    "id": "FC-025",
+    "front": "SIE Exam: municipal bond insurance",
+    "back": "Bond insurance improves credit ratings and marketability but insured bonds can still face risks such as liquidity issues or insurer downgrade.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "municipal bond insurance",
+      "credit enhancement",
+      "municipal bonds"
+    ]
+  },
+  {
+    "id": "FC-026",
+    "front": "SIE Exam: official statement",
+    "back": "The official statement discloses terms, financial condition, and risks for a new muni issue, similar to a corporate prospectus.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "official statement",
+      "municipal bonds",
+      "primary market"
+    ]
+  },
+  {
+    "id": "FC-027",
+    "front": "SIE Exam: AMT",
+    "back": "Private activity bond interest can be a preference item for AMT, affecting some investors.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "AMT",
+      "private activity bonds",
+      "municipal bonds"
+    ]
+  },
+  {
+    "id": "FC-028",
+    "front": "SIE Exam: IDRB",
+    "back": "IDRBs are revenue bonds where a municipality issues on behalf of a private entity; repayment depends on the project's success.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "IDRB",
+      "revenue bonds",
+      "municipal bonds"
+    ]
+  },
+  {
+    "id": "FC-029",
+    "front": "SIE Exam: T bills",
+    "back": "T-bills are short-term discount securities maturing in one year or less, with return equal to the difference between purchase price and par.",
+    "section_id": 1,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "T-bills",
+      "treasuries",
+      "discount securities"
+    ]
+  },
+  {
+    "id": "FC-030",
+    "front": "SIE Exam: Treasury notes",
+    "back": "Treasury notes range from 2 to 10 years, paying semiannual interest.",
+    "section_id": 1,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "Treasury notes",
+      "treasuries",
+      "government securities"
+    ]
+  },
+  {
+    "id": "FC-031",
+    "front": "SIE Exam: TIPS",
+    "back": "TIPS principal adjusts with CPI changes, helping preserve real purchasing power.",
+    "section_id": 1,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "TIPS",
+      "inflation protection",
+      "treasuries"
+    ]
+  },
+  {
+    "id": "FC-032",
+    "front": "SIE Exam: STRIPS",
+    "back": "STRIPS (Separate Trading of Registered Interest and Principal Securities) are zero-coupon Treasuries created by separating coupons from principal.",
+    "section_id": 1,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "STRIPS",
+      "zero-coupon",
+      "treasuries"
+    ]
+  },
+  {
+    "id": "FC-033",
+    "front": "SIE Exam: Treasury taxation",
+    "back": "Treasury interest is subject to federal income tax but generally exempt from state and local income taxes.",
+    "section_id": 1,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "Treasury taxation",
+      "treasuries",
+      "tax considerations"
+    ]
+  },
+  {
+    "id": "FC-034",
+    "front": "SIE Exam: liquidity",
+    "back": "Deep markets and widespread dealer activity make Treasuries among the most liquid securities.",
+    "section_id": 1,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "liquidity",
+      "treasuries",
+      "secondary market"
+    ]
+  },
+  {
+    "id": "FC-035",
+    "front": "SIE Exam: agency securities",
+    "back": "Agencies like Fannie Mae, Freddie Mac, and FHLB issue debt; some carry explicit government backing while GSEs have implicit support.",
+    "section_id": 1,
+    "topic": "agency securities",
+    "keyword_tags": [
+      "agency securities",
+      "GSE",
+      "Fannie Mae"
+    ]
+  },
+  {
+    "id": "FC-036",
+    "front": "SIE Exam: prepayment risk",
+    "back": "Falling rates often trigger refinancing, returning principal sooner than expected and forcing reinvestment at lower rates.",
+    "section_id": 1,
+    "topic": "agency securities",
+    "keyword_tags": [
+      "prepayment risk",
+      "MBS",
+      "agency securities"
+    ]
+  },
+  {
+    "id": "FC-037",
+    "front": "SIE Exam: agency yield spread",
+    "back": "Agencies (especially GSEs) typically yield more than Treasuries due to marginally higher perceived credit risk.",
+    "section_id": 1,
+    "topic": "agency securities",
+    "keyword_tags": [
+      "agency yield spread",
+      "agency securities",
+      "credit risk"
+    ]
+  },
+  {
+    "id": "FC-038",
+    "front": "SIE Exam: GNMA",
+    "back": "Ginnie Mae securities are the only mortgage-backed securities with explicit U.S. government backing.",
+    "section_id": 1,
+    "topic": "agency securities",
+    "keyword_tags": [
+      "GNMA",
+      "agency securities",
+      "government guarantee"
+    ]
+  },
+  {
+    "id": "FC-039",
+    "front": "SIE Exam: primary market",
+    "back": "The primary market handles new issues—IPOs, secondary offerings, and bond issuances sold by the issuer.",
+    "section_id": 1,
+    "topic": "primary market",
+    "keyword_tags": [
+      "primary market",
+      "new issues",
+      "underwriting"
+    ]
+  },
+  {
+    "id": "FC-040",
+    "front": "SIE Exam: secondary market",
+    "back": "Secondary market transactions involve trading of already-issued securities between investors.",
+    "section_id": 1,
+    "topic": "secondary market",
+    "keyword_tags": [
+      "secondary market",
+      "liquidity",
+      "trading"
+    ]
+  },
+  {
+    "id": "FC-041",
+    "front": "SIE Exam: firm commitment",
+    "back": "Firm commitment means the underwriter buys the issue, assuming the risk of reselling at a profit or loss.",
+    "section_id": 1,
+    "topic": "underwriting",
+    "keyword_tags": [
+      "firm commitment",
+      "underwriting",
+      "investment banking"
+    ]
+  },
+  {
+    "id": "FC-042",
+    "front": "SIE Exam: best efforts",
+    "back": "Best efforts underwriters sell on an agency basis; unsold securities may be retained by the issuer.",
+    "section_id": 1,
+    "topic": "underwriting",
+    "keyword_tags": [
+      "best efforts",
+      "underwriting",
+      "primary market"
+    ]
+  },
+  {
+    "id": "FC-043",
+    "front": "SIE Exam: cooling off period",
+    "back": "The cooling-off period allows distribution of the preliminary prospectus but prohibits sales until the registration is effective.",
+    "section_id": 1,
+    "topic": "underwriting",
+    "keyword_tags": [
+      "cooling-off period",
+      "red herring",
+      "IPO"
+    ]
+  },
+  {
+    "id": "FC-044",
+    "front": "SIE Exam: shelf registration",
+    "back": "Shelf registrations let qualifying issuers register securities once and bring them to market incrementally.",
+    "section_id": 1,
+    "topic": "primary market",
+    "keyword_tags": [
+      "shelf registration",
+      "primary market",
+      "SEC registration"
+    ]
+  },
+  {
+    "id": "FC-045",
+    "front": "SIE Exam: OTC market",
+    "back": "OTC trading occurs through dealer networks for unlisted or thinly traded securities, including many bonds and penny stocks.",
+    "section_id": 1,
+    "topic": "secondary market",
+    "keyword_tags": [
+      "OTC market",
+      "secondary market",
+      "broker-dealers"
+    ]
+  },
+  {
+    "id": "FC-046",
+    "front": "SIE Exam: all or none",
+    "back": "AON offerings require the full issue to be sold within a specified period or the deal is voided.",
+    "section_id": 1,
+    "topic": "underwriting",
+    "keyword_tags": [
+      "all-or-none",
+      "underwriting",
+      "primary market"
+    ]
+  },
+  {
+    "id": "FC-047",
+    "front": "SIE Exam: broker dealer",
+    "back": "Brokers act as agents facilitating trades; dealers act as principals buying and selling for their own account.",
+    "section_id": 1,
+    "topic": "market participants",
+    "keyword_tags": [
+      "broker-dealer",
+      "agent",
+      "market participants"
+    ]
+  },
+  {
+    "id": "FC-048",
+    "front": "SIE Exam: market maker",
+    "back": "Market makers continuously quote prices and trade from inventory, narrowing spreads and improving liquidity.",
+    "section_id": 1,
+    "topic": "market participants",
+    "keyword_tags": [
+      "market maker",
+      "bid-ask spread",
+      "liquidity"
+    ]
+  },
+  {
+    "id": "FC-049",
+    "front": "SIE Exam: investment adviser",
+    "back": "Advisers managing client assets register with the SEC or state regulators depending on assets under management.",
+    "section_id": 1,
+    "topic": "market participants",
+    "keyword_tags": [
+      "investment adviser",
+      "Investment Advisers Act",
+      "market participants"
+    ]
+  },
+  {
+    "id": "FC-050",
+    "front": "SIE Exam: transfer agent",
+    "back": "Transfer agents maintain shareholder records, issue certificates, and handle name changes and transfers.",
+    "section_id": 1,
+    "topic": "market participants",
+    "keyword_tags": [
+      "transfer agent",
+      "market participants",
+      "shareholder records"
+    ]
+  },
+  {
+    "id": "FC-051",
+    "front": "SIE Exam: clearing",
+    "back": "Clearing firms (e.g., NSCC, DTCC) ensure trades settle properly and manage counterparty risk.",
+    "section_id": 1,
+    "topic": "market participants",
+    "keyword_tags": [
+      "clearing",
+      "settlement",
+      "market participants"
+    ]
+  },
+  {
+    "id": "FC-052",
+    "front": "SIE Exam: leading indicators",
+    "back": "Building permits tend to change before broader economic activity, signaling future construction and employment trends.",
+    "section_id": 1,
+    "topic": "economic factors",
+    "keyword_tags": [
+      "leading indicators",
+      "economic factors",
+      "building permits"
+    ]
+  },
+  {
+    "id": "FC-053",
+    "front": "SIE Exam: GDP",
+    "back": "GDP is the broadest measure of a nation's economic output over a specific period.",
+    "section_id": 1,
+    "topic": "economic factors",
+    "keyword_tags": [
+      "GDP",
+      "economic factors",
+      "macroeconomics"
+    ]
+  },
+  {
+    "id": "FC-054",
+    "front": "SIE Exam: CPI",
+    "back": "CPI tracks price changes in a basket of consumer goods and services, reflecting inflation trends.",
+    "section_id": 1,
+    "topic": "economic factors",
+    "keyword_tags": [
+      "CPI",
+      "inflation",
+      "economic factors"
+    ]
+  },
+  {
+    "id": "FC-055",
+    "front": "SIE Exam: open market operations",
+    "back": "The Fed buys securities to inject liquidity (lower rates) and sells to drain liquidity (raise rates).",
+    "section_id": 1,
+    "topic": "monetary policy",
+    "keyword_tags": [
+      "open market operations",
+      "Federal Reserve",
+      "monetary policy"
+    ]
+  },
+  {
+    "id": "FC-056",
+    "front": "SIE Exam: discount rate",
+    "back": "A higher discount rate makes borrowing from the Fed more expensive for banks, typically tightening monetary conditions and pushing rates up.",
+    "section_id": 1,
+    "topic": "monetary policy",
+    "keyword_tags": [
+      "discount rate",
+      "monetary policy",
+      "interest rates"
+    ]
+  },
+  {
+    "id": "FC-057",
+    "front": "SIE Exam: quantitative easing",
+    "back": "QE expands the Fed's balance sheet through large-scale asset purchases when conventional rate cuts are insufficient.",
+    "section_id": 1,
+    "topic": "monetary policy",
+    "keyword_tags": [
+      "quantitative easing",
+      "monetary policy",
+      "Federal Reserve"
+    ]
+  },
+  {
+    "id": "FC-058",
+    "front": "SIE Exam: fiscal policy",
+    "back": "Congress and the executive branch set fiscal policy via budget, taxes, and government spending programs.",
+    "section_id": 1,
+    "topic": "fiscal policy",
+    "keyword_tags": [
+      "fiscal policy",
+      "government spending",
+      "taxation"
+    ]
+  },
+  {
+    "id": "FC-059",
+    "front": "SIE Exam: expansionary fiscal policy",
+    "back": "Tax cuts and increased spending inject demand into the economy, countering recessionary pressures.",
+    "section_id": 1,
+    "topic": "fiscal policy",
+    "keyword_tags": [
+      "expansionary fiscal policy",
+      "fiscal policy",
+      "economic stimulus"
+    ]
+  },
+  {
+    "id": "FC-060",
+    "front": "SIE Exam: systematic risk",
+    "back": "Market risk—recessions, interest rate shifts, geopolitical events—impacts broad asset classes regardless of diversification.",
+    "section_id": 1,
+    "topic": "investment risks",
+    "keyword_tags": [
+      "systematic risk",
+      "market risk",
+      "diversification"
+    ]
+  },
+  {
+    "id": "FC-061",
+    "front": "SIE Exam: diversification",
+    "back": "Holding multiple uncorrelated securities reduces exposure to any single issuer's failure but not broad market downturns.",
+    "section_id": 1,
+    "topic": "investment risks",
+    "keyword_tags": [
+      "diversification",
+      "unsystematic risk",
+      "portfolio risk"
+    ]
+  },
+  {
+    "id": "FC-062",
+    "front": "SIE Exam: purchasing power risk",
+    "back": "Fixed income returns erode in real terms when inflation rises faster than coupon payments.",
+    "section_id": 1,
+    "topic": "investment risks",
+    "keyword_tags": [
+      "purchasing power risk",
+      "inflation risk",
+      "investment risks"
+    ]
+  },
+  {
+    "id": "FC-063",
+    "front": "SIE Exam: reinvestment risk",
+    "back": "Coupon payments reinvested at lower rates during a declining rate environment reduce total return.",
+    "section_id": 1,
+    "topic": "investment risks",
+    "keyword_tags": [
+      "reinvestment risk",
+      "interest rates",
+      "investment risks"
+    ]
+  },
+  {
+    "id": "FC-064",
+    "front": "SIE Exam: discount bond",
+    "back": "When prevailing rates exceed the coupon, existing bonds must sell below par to offer competitive yields.",
+    "section_id": 1,
+    "topic": "yield and bond price relationship",
+    "keyword_tags": [
+      "discount bond",
+      "interest rate risk",
+      "yield and bond price relationship"
+    ]
+  },
+  {
+    "id": "FC-065",
+    "front": "SIE Exam: yield to maturity",
+    "back": "Discount bonds must offer yields above the stated coupon to compensate investors for below-par purchase prices.",
+    "section_id": 1,
+    "topic": "yield and bond price relationship",
+    "keyword_tags": [
+      "yield to maturity",
+      "discount bond",
+      "yield and bond price relationship"
+    ]
+  },
+  {
+    "id": "FC-066",
+    "front": "SIE Exam: duration",
+    "back": "Higher duration means greater percentage price change for a given interest rate movement.",
+    "section_id": 1,
+    "topic": "yield and bond price relationship",
+    "keyword_tags": [
+      "duration",
+      "interest rate sensitivity",
+      "yield and bond price relationship"
+    ]
+  },
+  {
+    "id": "FC-067",
+    "front": "SIE Exam: SIPC",
+    "back": "SIPC covers missing customer assets when a member firm fails, up to statutory limits—not market losses.",
+    "section_id": 1,
+    "topic": "market participants",
+    "keyword_tags": [
+      "SIPC",
+      "customer protection",
+      "market participants"
+    ]
+  },
+  {
+    "id": "FC-068",
+    "front": "SIE Exam: third market",
+    "back": "Third-market trading involves listed securities executed OTC, often by institutional participants.",
+    "section_id": 1,
+    "topic": "secondary market",
+    "keyword_tags": [
+      "third market",
+      "secondary market",
+      "OTC"
+    ]
+  },
+  {
+    "id": "FC-069",
+    "front": "SIE Exam: NAV",
+    "back": "NAV = (total assets − liabilities) ÷ shares outstanding.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "NAV",
+      "mutual funds",
+      "fund valuation"
+    ]
+  },
+  {
+    "id": "FC-070",
+    "front": "SIE Exam: open end fund",
+    "back": "Open-end funds redeem at forward-priced NAV (typically the close of the day the order is received), less redemption fees or CDSC if applicable.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "open-end fund",
+      "redemption",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-071",
+    "front": "SIE Exam: front end load",
+    "back": "Offering price = NAV ÷ (1 − load). $20 ÷ 0.95 ≈ $21.05, closest to $21.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "front-end load",
+      "offering price",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-072",
+    "front": "SIE Exam: sales charge",
+    "back": "With a front-end load, the sales charge is deducted first: $25,000 × 5% = $1,250 load, leaving $23,750 invested at NAV.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "front-end load",
+      "sales charge",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-073",
+    "front": "SIE Exam: CDSC",
+    "back": "CDSC is a back-end load that declines over time and is charged if the investor sells before the schedule expires.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "CDSC",
+      "back-end load",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-074",
+    "front": "SIE Exam: 12b 1 fees",
+    "back": "12b-1 fees pay for marketing, distribution, and shareholder servicing.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "12b-1 fees",
+      "expense ratio",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-075",
+    "front": "SIE Exam: no load fund",
+    "back": "No-load means no sales charge on purchase or redemption, but the fund can still charge management fees, 12b-1 fees, and redemption fees.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "no-load fund",
+      "mutual funds",
+      "sales charge"
+    ]
+  },
+  {
+    "id": "FC-076",
+    "front": "SIE Exam: letter of intent",
+    "back": "An LOI lets investors receive breakpoint pricing during the accumulation period based on the stated commitment, if fulfilled.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "letter of intent",
+      "breakpoint",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-077",
+    "front": "SIE Exam: rights of accumulation",
+    "back": "Rights of accumulation count prior investments in the fund family toward breakpoint thresholds for lower front-end loads.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "rights of accumulation",
+      "breakpoint",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-078",
+    "front": "SIE Exam: expense ratio",
+    "back": "Expense ratio includes management fees, administrative costs, and often 12b-1 fees, expressed as a percentage of assets.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "expense ratio",
+      "mutual funds",
+      "fund costs"
+    ]
+  },
+  {
+    "id": "FC-079",
+    "front": "SIE Exam: turnover ratio",
+    "back": "Turnover measures how often the portfolio is traded.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "turnover ratio",
+      "mutual funds",
+      "portfolio management"
+    ]
+  },
+  {
+    "id": "FC-080",
+    "front": "SIE Exam: capital gains distribution",
+    "back": "Funds pass through capital gains and dividends.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "capital gains distribution",
+      "mutual fund taxation",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-081",
+    "front": "SIE Exam: money market fund",
+    "back": "Money market funds seek stability and liquidity by holding short-term debt such as T-bills, commercial paper, and repos.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "money market fund",
+      "mutual funds",
+      "short-term debt"
+    ]
+  },
+  {
+    "id": "FC-082",
+    "front": "SIE Exam: share classes",
+    "back": "Class C shares typically have no front-end load but higher ongoing fees and a CDSC that expires after a relatively short period.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "share classes",
+      "Class C shares",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-083",
+    "front": "SIE Exam: prospectus",
+    "back": "The prospectus is the primary disclosure document covering objectives, strategies, risks, fees, and historical results.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "prospectus",
+      "disclosure",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-084",
+    "front": "SIE Exam: Investment Company Act",
+    "back": "The 1940 Act regulates investment companies, requiring registration, disclosure, and structural protections for fund investors.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "Investment Company Act",
+      "mutual funds",
+      "SEC registration"
+    ]
+  },
+  {
+    "id": "FC-085",
+    "front": "SIE Exam: mutual funds",
+    "back": "Mutual funds pool capital to hold many securities, reducing unsystematic (company-specific) risk but not overall market risk.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "diversification",
+      "mutual funds",
+      "investment risks"
+    ]
+  },
+  {
+    "id": "FC-086",
+    "front": "SIE Exam: index fund",
+    "back": "Index funds use passive management to replicate index returns, minus fees and tracking differences.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "index fund",
+      "passive management",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-087",
+    "front": "SIE Exam: fund family",
+    "back": "Many fund families permit tax-reportable exchanges among their funds, sometimes waiving loads but not potential tax consequences.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "fund family",
+      "exchange privilege",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-088",
+    "front": "SIE Exam: redemption fee",
+    "back": "Redemption fees go back to the fund to offset trading costs from frequent in-and-out trading.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "redemption fee",
+      "mutual funds",
+      "market timing"
+    ]
+  },
+  {
+    "id": "FC-089",
+    "front": "SIE Exam: board of trustees",
+    "back": "The board oversees the adviser, reviews fees, and acts on behalf of shareholders under the 1940 Act.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "board of trustees",
+      "mutual funds",
+      "governance"
+    ]
+  },
+  {
+    "id": "FC-090",
+    "front": "SIE Exam: growth and income",
+    "back": "Growth and income funds blend stocks with growth potential and dividend-paying companies for dual objectives.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "growth and income",
+      "fund objectives",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-091",
+    "front": "SIE Exam: dividend reinvestment",
+    "back": "Reinvested dividends buy more shares at the post-distribution price.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "dividend reinvestment",
+      "mutual funds",
+      "cost basis"
+    ]
+  },
+  {
+    "id": "FC-092",
+    "front": "SIE Exam: closed end fund",
+    "back": "Closed-end funds trade like stocks and may price at a premium or discount to NAV.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "closed-end fund",
+      "mutual funds",
+      "premium discount"
+    ]
+  },
+  {
+    "id": "FC-093",
+    "front": "SIE Exam: investment objective",
+    "back": "The prospectus states whether the fund seeks growth, income, preservation of capital, or a combination.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "investment objective",
+      "prospectus",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-094",
+    "front": "SIE Exam: Class B shares",
+    "back": "Once the CDSC schedule ends, redemption is not subject to the deferred sales charge, but annual expenses may remain higher than Class A.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "CDSC",
+      "Class B shares",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "FC-095",
+    "front": "SIE Exam: ETF trading",
+    "back": "ETFs trade intraday on exchanges like stocks, with prices driven by supply and demand.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "ETF trading",
+      "secondary market",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-096",
+    "front": "SIE Exam: creation redemption",
+    "back": "Authorized participants create or redeem large blocks (creation units) by delivering or receiving the underlying portfolio securities.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "creation redemption",
+      "authorized participant",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-097",
+    "front": "SIE Exam: premium",
+    "back": "When market price exceeds NAV, the ETF trades at a premium.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "premium",
+      "NAV",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-098",
+    "front": "SIE Exam: tax efficiency",
+    "back": "In-kind creation/redemption allows the fund to shed low-basis shares without triggering fund-level taxable sales.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "tax efficiency",
+      "in-kind redemption",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-099",
+    "front": "SIE Exam: index ETF",
+    "back": "Passive index ETFs typically charge lower fees than active mutual funds and track a benchmark.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "expense ratio",
+      "index ETF",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-100",
+    "front": "SIE Exam: sector ETF",
+    "back": "Sector ETFs concentrate in a specific industry, increasing sector-specific risk.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "sector ETF",
+      "concentration risk",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-101",
+    "front": "SIE Exam: leveraged ETF",
+    "back": "Leveraged ETFs reset daily; compounding effects can cause long-term returns to diverge sharply from the index multiple.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "leveraged ETF",
+      "daily reset",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-102",
+    "front": "SIE Exam: inverse ETF",
+    "back": "Inverse ETFs seek the opposite of the benchmark's daily return and carry significant risk, especially over longer periods.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "inverse ETF",
+      "ETFs",
+      "hedging"
+    ]
+  },
+  {
+    "id": "FC-103",
+    "front": "SIE Exam: bond ETF",
+    "back": "Bond ETFs are perpetual funds holding a changing portfolio of bonds rather than a single fixed-maturity obligation.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "bond ETF",
+      "duration",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-104",
+    "front": "SIE Exam: tracking error",
+    "back": "Tracking error reflects differences between ETF returns and index returns, often due to fees, sampling, or timing.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "tracking error",
+      "index ETF",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-105",
+    "front": "SIE Exam: commodity ETF",
+    "back": "Physical ETFs hold the underlying commodity in storage, while others may use derivatives for exposure.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "commodity ETF",
+      "physical backing",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-106",
+    "front": "SIE Exam: bid ask spread",
+    "back": "Wider spreads increase transaction costs, especially for thinly traded ETFs.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "bid-ask spread",
+      "ETF liquidity",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-107",
+    "front": "SIE Exam: transparency",
+    "back": "ETFs typically disclose holdings daily, helping investors understand exposures.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "transparency",
+      "ETF holdings",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-108",
+    "front": "SIE Exam: actively managed ETF",
+    "back": "Active ETFs employ managers making investment decisions rather than passive index replication.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "actively managed ETF",
+      "ETFs",
+      "portfolio management"
+    ]
+  },
+  {
+    "id": "FC-109",
+    "front": "SIE Exam: intraday trading",
+    "back": "Intraday exchange trading gives ETFs flexibility that once-daily mutual fund pricing does not.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "intraday trading",
+      "ETF vs mutual fund",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-110",
+    "front": "SIE Exam: ETF dividends",
+    "back": "ETF distributions may be qualified dividends, ordinary income, or capital gains depending on fund holdings.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "ETF dividends",
+      "taxation",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-111",
+    "front": "SIE Exam: broad market ETF",
+    "back": "Broad market ETFs hold diversified baskets of stocks tracking indices such as the S&P 500 or total market indexes.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "broad market ETF",
+      "diversification",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-112",
+    "front": "SIE Exam: settlement",
+    "back": "As of 2026, ETFs settle like stocks on the T+1 regular-way equity settlement cycle.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "settlement",
+      "ETF trading",
+      "T+1"
+    ]
+  },
+  {
+    "id": "FC-113",
+    "front": "SIE Exam: premium discount",
+    "back": "Exchange trading means both can trade at premiums or discounts relative to portfolio value.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "closed-end fund",
+      "premium discount",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-114",
+    "front": "SIE Exam: limit order",
+    "back": "Limit orders specify the highest price a buyer will pay, controlling execution cost on ETFs.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "limit order",
+      "ETF trading",
+      "ETFs"
+    ]
+  },
+  {
+    "id": "FC-115",
+    "front": "SIE Exam: REIT",
+    "back": "REITs pool investor capital to own or finance real estate and pass income through to investors.",
+    "section_id": 2,
+    "topic": "REITs",
+    "keyword_tags": [
+      "REIT",
+      "real estate",
+      "income distribution"
+    ]
+  },
+  {
+    "id": "FC-116",
+    "front": "SIE Exam: equity REIT",
+    "back": "Equity REITs own physical properties—apartments, offices, malls—and earn rental income.",
+    "section_id": 2,
+    "topic": "REITs",
+    "keyword_tags": [
+      "equity REIT",
+      "rental income",
+      "REITs"
+    ]
+  },
+  {
+    "id": "FC-117",
+    "front": "SIE Exam: mortgage REIT",
+    "back": "mREITs profit from the spread between borrowing costs and mortgage yields, making them rate-sensitive.",
+    "section_id": 2,
+    "topic": "REITs",
+    "keyword_tags": [
+      "mortgage REIT",
+      "interest rate risk",
+      "REITs"
+    ]
+  },
+  {
+    "id": "FC-118",
+    "front": "SIE Exam: REIT qualification",
+    "back": "REITs must pay out at least 90% of taxable income as dividends to maintain REIT tax status.",
+    "section_id": 2,
+    "topic": "REITs",
+    "keyword_tags": [
+      "REIT qualification",
+      "distribution requirement",
+      "REITs"
+    ]
+  },
+  {
+    "id": "FC-119",
+    "front": "SIE Exam: REIT taxation",
+    "back": "REIT distributions may include ordinary income, capital gains, and return of capital, each with different tax treatment.",
+    "section_id": 2,
+    "topic": "REITs",
+    "keyword_tags": [
+      "REIT taxation",
+      "dividends",
+      "REITs"
+    ]
+  },
+  {
+    "id": "FC-120",
+    "front": "SIE Exam: publicly traded REIT",
+    "back": "Listed REIT shares trade on exchanges, unlike many non-traded REITs with limited liquidity.",
+    "section_id": 2,
+    "topic": "REITs",
+    "keyword_tags": [
+      "publicly traded REIT",
+      "liquidity",
+      "REITs"
+    ]
+  }
+]

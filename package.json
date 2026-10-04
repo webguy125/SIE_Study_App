@@ -1,0 +1,26 @@
+{
+  "name": "sie-2026-study-website",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Local-first SIE 2026 exam prep aligned with FINRA October 2025 content outline",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build:defender && vite",
+    "build": "npm run build:defender && tsc --noEmit && vite build",
+    "build:defender": "tsc -p compliance-defender/tsconfig.json && node scripts/inline-defender.mjs",
+    "preview": "npm run build:defender && vite preview",
+    "start": "npm run build:defender && vite preview",
+    "generate-data": "node scripts/generate-data.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}

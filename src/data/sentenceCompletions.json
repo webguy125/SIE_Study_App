@@ -1,0 +1,722 @@
+[
+  {
+    "id": "SC-001",
+    "sentence": "The ___ was created to protect investors and maintain fair, orderly, and efficient markets.",
+    "answer": "SEC",
+    "hint": "Federal securities regulator",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "dividends",
+      "common stock"
+    ]
+  },
+  {
+    "id": "SC-002",
+    "sentence": "The ___ market is where newly issued securities are sold by issuers to investors for the first time.",
+    "answer": "primary",
+    "hint": "Opposite of secondary market",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "rights offering",
+      "dilution"
+    ]
+  },
+  {
+    "id": "SC-003",
+    "sentence": "___ bonds are backed by the full faith and credit and taxing power of the issuing municipality.",
+    "answer": "General obligation",
+    "hint": "GO bonds vs revenue bonds",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "liquidation priority",
+      "capital structure"
+    ]
+  },
+  {
+    "id": "SC-004",
+    "sentence": "When market interest rates rise, existing bond prices generally ___.",
+    "answer": "fall",
+    "hint": "Inverse price-yield relationship",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "interest rate risk",
+      "yield and bond price relationship"
+    ]
+  },
+  {
+    "id": "SC-005",
+    "sentence": "___ bills are U.S. government securities sold at a discount with maturities of one year or less.",
+    "answer": "Treasury",
+    "hint": "Short-term government paper",
+    "section_id": 1,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "T-bills",
+      "treasuries"
+    ]
+  },
+  {
+    "id": "SC-006",
+    "sentence": "The ___ is calculated at the end of each business day by dividing total fund assets minus liabilities by shares outstanding.",
+    "answer": "NAV",
+    "hint": "Net Asset Value — mutual fund pricing",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "NAV",
+      "mutual funds"
+    ]
+  },
+  {
+    "id": "SC-007",
+    "sentence": "A pattern day trader must maintain minimum equity of $___ in a margin account.",
+    "answer": "25000",
+    "hint": "PDT rule threshold",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "front-end load",
+      "sales charge"
+    ]
+  },
+  {
+    "id": "SC-008",
+    "sentence": "A ___ order specifies the maximum price a buyer will pay or minimum price a seller will accept.",
+    "answer": "limit",
+    "hint": "Price control, not guaranteed execution",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "limit order",
+      "ETF trading"
+    ]
+  },
+  {
+    "id": "SC-009",
+    "sentence": "The ___ sets rules for the municipal securities market but does not directly enforce them.",
+    "answer": "MSRB",
+    "hint": "Municipal Securities Rulemaking Board",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "529 plan",
+      "municipal fund securities"
+    ]
+  },
+  {
+    "id": "SC-010",
+    "sentence": "Regulation T requires a minimum of ___ percent initial margin when purchasing securities on margin.",
+    "answer": "50",
+    "hint": "Half the purchase price",
+    "section_id": 3,
+    "topic": "customer accounts",
+    "keyword_tags": [
+      "customer accounts",
+      "good-faith violation"
+    ]
+  },
+  {
+    "id": "SC-011",
+    "sentence": "___ is the self-regulatory organization responsible for regulating broker-dealers and registered representatives.",
+    "answer": "FINRA",
+    "hint": "Largest securities SRO",
+    "section_id": 3,
+    "topic": "settlement",
+    "keyword_tags": [
+      "settlement",
+      "T+1"
+    ]
+  },
+  {
+    "id": "SC-012",
+    "sentence": "A Currency Transaction Report (CTR) is required for cash transactions exceeding $___ in one business day.",
+    "answer": "10000",
+    "hint": "BSA reporting threshold",
+    "section_id": 3,
+    "topic": "margin basics",
+    "keyword_tags": [
+      "margin basics",
+      "equity calculation"
+    ]
+  },
+  {
+    "id": "SC-013",
+    "sentence": "___ trading is the illegal practice of buying or selling securities based on material nonpublic information.",
+    "answer": "Insider",
+    "hint": "MNPI violation",
+    "section_id": 3,
+    "topic": "insider trading",
+    "keyword_tags": [
+      "insider trading",
+      "MNPI"
+    ]
+  },
+  {
+    "id": "SC-014",
+    "sentence": "A ___ must be filed when a firm knows or suspects a transaction involves funds from illegal activity.",
+    "answer": "SAR",
+    "hint": "Suspicious Activity Report",
+    "section_id": 3,
+    "topic": "AML",
+    "keyword_tags": [
+      "AML",
+      "red flags"
+    ]
+  },
+  {
+    "id": "SC-015",
+    "sentence": "Form ___ is the uniform application used to register securities industry professionals with FINRA.",
+    "answer": "U4",
+    "hint": "Registration and disclosure form",
+    "section_id": 4,
+    "topic": "FINRA",
+    "keyword_tags": [
+      "statutory disqualification",
+      "disciplinary disclosures"
+    ]
+  },
+  {
+    "id": "SC-016",
+    "sentence": "An investor purchases 200 shares of XYZ common stock at $45 per share. If XYZ pays a quarterly dividend of $0.50 per share, how much dividend income will the investor receive each quarter is: ___.",
+    "answer": "$100",
+    "hint": "Practice multiplying shares outstanding by per-share dividends for quarterly and",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "dividends",
+      "common stock"
+    ]
+  },
+  {
+    "id": "SC-017",
+    "sentence": "A corporation issues cumulative preferred stock with a $4 annual dividend. No dividends were paid for two years. In year three, the board declares a $5 per share dividend on common stock. How much must cumulative preferred shareholders receive per share before common receives anything is: ___.",
+    "answer": "$12",
+    "hint": "Work through multi-year dividend scenarios with missed payments on cumulative pr",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "cumulative preferred",
+      "dividends"
+    ]
+  },
+  {
+    "id": "SC-018",
+    "sentence": "Warrants are LEAST similar to which of the following is: ___.",
+    "answer": "D",
+    "hint": "Review who issues warrants (company) vs exchange-traded options (OCC).",
+    "section_id": 1,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "warrants",
+      "options basics"
+    ]
+  },
+  {
+    "id": "SC-019",
+    "sentence": "A corporate bond with a $1,000 par value and 6% coupon pays annual interest of: is: ___.",
+    "answer": "$60",
+    "hint": "Practice converting coupon rates to dollar amounts using par value.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "coupon",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "SC-020",
+    "sentence": "A $1,000 par bond with a 5% coupon is purchased at $900. The approximate current yield is: is: ___.",
+    "answer": "5.56%",
+    "hint": "Distinguish current yield from yield to maturity and nominal yield.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "current yield",
+      "debt securities"
+    ]
+  },
+  {
+    "id": "SC-021",
+    "sentence": "When interest rates in the market rise, the price of an existing fixed-rate bond will most likely: is: ___.",
+    "answer": "Decrease",
+    "hint": "Use a simple example: a 4% bond vs new 6% bonds when rates rise.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "interest rate risk",
+      "yield and bond price relationship"
+    ]
+  },
+  {
+    "id": "SC-022",
+    "sentence": "A bond trading at a premium most likely has a coupon rate that is: is: ___.",
+    "answer": "B",
+    "hint": "If coupon > market rate → premium; coupon < market rate → discount.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "premium bond",
+      "coupon rate"
+    ]
+  },
+  {
+    "id": "SC-023",
+    "sentence": "A bond with a 7% coupon purchased at $1,050 has a current yield that is: is: ___.",
+    "answer": "Less than 7%",
+    "hint": "Premium → current yield < coupon; discount → current yield > coupon.",
+    "section_id": 1,
+    "topic": "debt securities",
+    "keyword_tags": [
+      "current yield",
+      "premium bond"
+    ]
+  },
+  {
+    "id": "SC-024",
+    "sentence": "General obligation (GO) municipal bonds are backed primarily by: is: ___.",
+    "answer": "The issuer's taxing power",
+    "hint": "GO = full faith and credit/taxing power; revenue = project income.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "GO bonds",
+      "municipal bonds"
+    ]
+  },
+  {
+    "id": "SC-025",
+    "sentence": "Interest on most municipal bonds issued for governmental purposes is generally: is: ___.",
+    "answer": "B",
+    "hint": "Review exceptions: private activity bonds may trigger AMT.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "tax-exempt interest",
+      "municipal bonds"
+    ]
+  },
+  {
+    "id": "SC-026",
+    "sentence": "A wealthy investor in the 37% federal bracket compares a 4% corporate bond to a 3% municipal bond. The taxable-equivalent yield of the muni is approximately: is: ___.",
+    "answer": "4.76%",
+    "hint": "Use TEY formula when comparing taxable and tax-exempt bonds.",
+    "section_id": 1,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "taxable-equivalent yield",
+      "municipal bonds"
+    ]
+  },
+  {
+    "id": "SC-027",
+    "sentence": "U.S. Treasury notes typically have maturities of: is: ___.",
+    "answer": "2 to 10 years",
+    "hint": "Bills < 1 year; notes 2-10 years; bonds 20-30 years.",
+    "section_id": 1,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "Treasury notes",
+      "treasuries"
+    ]
+  },
+  {
+    "id": "SC-028",
+    "sentence": "Treasury Inflation-Protected Securities (TIPS) protect investors against: is: ___.",
+    "answer": "B",
+    "hint": "Compare nominal Treasuries vs TIPS in rising inflation environments.",
+    "section_id": 1,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "TIPS",
+      "inflation protection"
+    ]
+  },
+  {
+    "id": "SC-029",
+    "sentence": "Which is classified as a leading economic indicator is: ___.",
+    "answer": "C",
+    "hint": "Leading: permits, stock prices; Lagging: unemployment, CPI changes.",
+    "section_id": 1,
+    "topic": "economic factors",
+    "keyword_tags": [
+      "leading indicators",
+      "economic factors"
+    ]
+  },
+  {
+    "id": "SC-030",
+    "sentence": "When the Federal Reserve raises the discount rate, the likely market effect is: is: ___.",
+    "answer": "A",
+    "hint": "Review the three traditional Fed tools: OMO, discount rate, reserve requirements",
+    "section_id": 1,
+    "topic": "monetary policy",
+    "keyword_tags": [
+      "discount rate",
+      "monetary policy"
+    ]
+  },
+  {
+    "id": "SC-031",
+    "sentence": "Diversification is most effective at reducing: is: ___.",
+    "answer": "B",
+    "hint": "A portfolio of 15-20 stocks across sectors reduces company-specific risk signifi",
+    "section_id": 1,
+    "topic": "investment risks",
+    "keyword_tags": [
+      "diversification",
+      "unsystematic risk"
+    ]
+  },
+  {
+    "id": "SC-032",
+    "sentence": "A 4% coupon bond purchased at par sees market rates rise to 6%. The bond will most likely trade: is: ___.",
+    "answer": "At a discount",
+    "hint": "Draw a simple diagram: rates up → prices down; rates down → prices up.",
+    "section_id": 1,
+    "topic": "yield and bond price relationship",
+    "keyword_tags": [
+      "discount bond",
+      "interest rate risk"
+    ]
+  },
+  {
+    "id": "SC-033",
+    "sentence": "If a bond's yield to maturity (YTM) is greater than its coupon rate, the bond is trading: is: ___.",
+    "answer": "At a discount",
+    "hint": "Premium: YTM < coupon; Discount: YTM > coupon; Par: YTM = coupon.",
+    "section_id": 1,
+    "topic": "yield and bond price relationship",
+    "keyword_tags": [
+      "yield to maturity",
+      "discount bond"
+    ]
+  },
+  {
+    "id": "SC-034",
+    "sentence": "A mutual fund with a 5% front-end load and an NAV of $20 per share at purchase will have an offering price of approximately: is: ___.",
+    "answer": "$21.00",
+    "hint": "Memorize: offering price = NAV / (1 − load percentage).",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "front-end load",
+      "offering price"
+    ]
+  },
+  {
+    "id": "SC-035",
+    "sentence": "A customer invests $25,000 in a Class A mutual fund with a 5% front-end load. Approximately how much is actually invested in fund shares is: ___.",
+    "answer": "$23,750",
+    "hint": "Work both directions: load from gross investment and net amount reaching the fun",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "front-end load",
+      "sales charge"
+    ]
+  },
+  {
+    "id": "SC-036",
+    "sentence": "A mutual fund's investment objective is found primarily in the: is: ___.",
+    "answer": "Prospectus",
+    "hint": "Mismatch between client goals and fund objective is a suitability concern.",
+    "section_id": 2,
+    "topic": "mutual funds",
+    "keyword_tags": [
+      "investment objective",
+      "prospectus"
+    ]
+  },
+  {
+    "id": "SC-037",
+    "sentence": "An ETF trading at $52 when its NAV is $50 is said to be trading at a: is: ___.",
+    "answer": "Premium",
+    "hint": "Arbitrage by authorized participants tends to keep prices near NAV.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "premium",
+      "NAV"
+    ]
+  },
+  {
+    "id": "SC-038",
+    "sentence": "A sector ETF that tracks the energy industry will primarily hold: is: ___.",
+    "answer": "B",
+    "hint": "Sector funds lack broad diversification across industries.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "sector ETF",
+      "concentration risk"
+    ]
+  },
+  {
+    "id": "SC-039",
+    "sentence": "Most ETFs provide portfolio transparency by: is: ___.",
+    "answer": "A",
+    "hint": "Transparency supports informed investment decisions.",
+    "section_id": 2,
+    "topic": "ETFs",
+    "keyword_tags": [
+      "transparency",
+      "ETF holdings"
+    ]
+  },
+  {
+    "id": "SC-040",
+    "sentence": "To qualify as a REIT, a company must distribute at least what percentage of taxable income to shareholders annually is: ___.",
+    "answer": "90%",
+    "hint": "High payout ratios can limit reinvestment for growth.",
+    "section_id": 2,
+    "topic": "REITs",
+    "keyword_tags": [
+      "REIT qualification",
+      "distribution requirement"
+    ]
+  },
+  {
+    "id": "SC-041",
+    "sentence": "Publicly traded REITs offer investors liquidity because they: is: ___.",
+    "answer": "B",
+    "hint": "Non-traded REITs may have redemption programs with limits and delays.",
+    "section_id": 2,
+    "topic": "REITs",
+    "keyword_tags": [
+      "publicly traded REIT",
+      "liquidity"
+    ]
+  },
+  {
+    "id": "SC-042",
+    "sentence": "A put option gives the holder the right to: is: ___.",
+    "answer": "B",
+    "hint": "Long puts profit when the underlying price falls below the strike (minus premium",
+    "section_id": 2,
+    "topic": "options basics",
+    "keyword_tags": [
+      "put option",
+      "options basics"
+    ]
+  },
+  {
+    "id": "SC-043",
+    "sentence": "Standardized exchange-traded equity options represent how many shares of the underlying is: ___.",
+    "answer": "100",
+    "hint": "Multiply per-share values by 100 for per-contract dollar amounts.",
+    "section_id": 2,
+    "topic": "options basics",
+    "keyword_tags": [
+      "contract size",
+      "options basics"
+    ]
+  },
+  {
+    "id": "SC-044",
+    "sentence": "An investor owns stock purchased at $60 and buys a $55 put for $2. If the stock falls to $45 at expiration, the net result per share is approximately: is: ___.",
+    "answer": "A $7 loss",
+    "hint": "Protective puts limit downside but do not eliminate loss from premium and strike",
+    "section_id": 2,
+    "topic": "options basics",
+    "keyword_tags": [
+      "protective put",
+      "options basics"
+    ]
+  },
+  {
+    "id": "SC-045",
+    "sentence": "Growth inside a non-qualified annuity is generally: is: ___.",
+    "answer": "Tax-deferred until withdrawn",
+    "hint": "Qualified annuities in IRAs are taxed on withdrawal like other IRA assets.",
+    "section_id": 2,
+    "topic": "annuity basics",
+    "keyword_tags": [
+      "tax deferral",
+      "annuity basics"
+    ]
+  },
+  {
+    "id": "SC-046",
+    "sentence": "Interest rate risk most directly affects: is: ___.",
+    "answer": "Fixed-income securities",
+    "hint": "Duration measures approximate price sensitivity to rate changes.",
+    "section_id": 2,
+    "topic": "investment risks",
+    "keyword_tags": [
+      "interest rate risk",
+      "bonds"
+    ]
+  },
+  {
+    "id": "SC-047",
+    "sentence": "Capital risk in equity investing means the investor may: is: ___.",
+    "answer": "A",
+    "hint": "Risk tolerance questionnaires assess acceptable capital risk.",
+    "section_id": 2,
+    "topic": "investment risks",
+    "keyword_tags": [
+      "capital risk",
+      "equity risk"
+    ]
+  },
+  {
+    "id": "SC-048",
+    "sentence": "When market interest rates rise, existing bond prices generally: is: ___.",
+    "answer": "Decrease",
+    "hint": "This is fundamental bond math for the SIE exam.",
+    "section_id": 2,
+    "topic": "yield and bond price relationship",
+    "keyword_tags": [
+      "inverse relationship",
+      "interest rates"
+    ]
+  },
+  {
+    "id": "SC-049",
+    "sentence": "A bond selling at a discount has a coupon rate that is: is: ___.",
+    "answer": "B",
+    "hint": "Discount bond current yield exceeds coupon rate.",
+    "section_id": 2,
+    "topic": "yield and bond price relationship",
+    "keyword_tags": [
+      "discount bond",
+      "coupon rate"
+    ]
+  },
+  {
+    "id": "SC-050",
+    "sentence": "A $1,000 par bond with a 6% coupon bought at $1,100 has a current yield closest to: is: ___.",
+    "answer": "5.45%",
+    "hint": "Premium → current yield < coupon rate.",
+    "section_id": 2,
+    "topic": "yield and bond price relationship",
+    "keyword_tags": [
+      "current yield",
+      "premium bond"
+    ]
+  },
+  {
+    "id": "SC-051",
+    "sentence": "Cyclical stocks tend to perform best when: is: ___.",
+    "answer": "The economy is expanding",
+    "hint": "Defensive stocks (utilities, staples) often hold up better in downturns.",
+    "section_id": 2,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "cyclical stock",
+      "economic cycle"
+    ]
+  },
+  {
+    "id": "SC-052",
+    "sentence": "Defensive stocks are often found in industries such as: is: ___.",
+    "answer": "B",
+    "hint": "Defensive does not mean risk-free—only relatively stable demand.",
+    "section_id": 2,
+    "topic": "equity securities",
+    "keyword_tags": [
+      "defensive stock",
+      "equity securities"
+    ]
+  },
+  {
+    "id": "SC-053",
+    "sentence": "An investor in the 32% federal tax bracket compares a 3.5% tax-exempt muni to a taxable bond. The taxable-equivalent yield is approximately: is: ___.",
+    "answer": "5.15%",
+    "hint": "Use TEY to compare munis with taxable corporate or Treasury bonds.",
+    "section_id": 2,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "taxable-equivalent yield",
+      "municipal bonds"
+    ]
+  },
+  {
+    "id": "SC-054",
+    "sentence": "The official statement for a new municipal bond offering is comparable to: is: ___.",
+    "answer": "A corporate bond prospectus",
+    "hint": "Continuing disclosure is available on the EMMA system.",
+    "section_id": 2,
+    "topic": "municipal bonds",
+    "keyword_tags": [
+      "official statement",
+      "municipal bonds"
+    ]
+  },
+  {
+    "id": "SC-055",
+    "sentence": "U.S. Treasury bonds generally have maturities of: is: ___.",
+    "answer": "20 to 30 years",
+    "hint": "Longer Treasuries have greater interest rate sensitivity.",
+    "section_id": 2,
+    "topic": "treasuries",
+    "keyword_tags": [
+      "Treasury bonds",
+      "treasuries"
+    ]
+  },
+  {
+    "id": "SC-056",
+    "sentence": "Fannie Mae and Freddie Mac are classified as: is: ___.",
+    "answer": "B",
+    "hint": "Know policy changes can affect GSE credit perceptions.",
+    "section_id": 2,
+    "topic": "agency securities",
+    "keyword_tags": [
+      "Fannie Mae",
+      "Freddie Mac"
+    ]
+  },
+  {
+    "id": "SC-057",
+    "sentence": "A customer opens a cash account and buys 500 shares of ABC stock on Monday. Under regular-way settlement, payment is due by: is: ___.",
+    "answer": "Tuesday (T+1)",
+    "hint": "Cash accounts require full payment by settlement; freeriding violates Regulation",
+    "section_id": 3,
+    "topic": "customer accounts",
+    "keyword_tags": [
+      "customer accounts",
+      "settlement"
+    ]
+  },
+  {
+    "id": "SC-058",
+    "sentence": "Which account type would MOST likely be used by two business partners who want proportional ownership without survivorship rights is: ___.",
+    "answer": "Tenants in common",
+    "hint": "Tenants in common can hold unequal ownership percentages.",
+    "section_id": 3,
+    "topic": "customer accounts",
+    "keyword_tags": [
+      "customer accounts",
+      "tenants in common"
+    ]
+  },
+  {
+    "id": "SC-059",
+    "sentence": "A customer with a cash account has $15,000 in settled cash. The customer may purchase up to how much in securities without borrowing is: ___.",
+    "answer": "$15,000",
+    "hint": "Purchases using unsettled sale proceeds may trigger good-faith violations.",
+    "section_id": 3,
+    "topic": "customer accounts",
+    "keyword_tags": [
+      "customer accounts",
+      "cash account"
+    ]
+  },
+  {
+    "id": "SC-060",
+    "sentence": "A customer enters a buy limit order for GHI at $42. The order will execute when the market price is: is: ___.",
+    "answer": "$42 or lower",
+    "hint": "Sell limit orders execute at the limit price or higher.",
+    "section_id": 3,
+    "topic": "orders",
+    "keyword_tags": [
+      "orders",
+      "limit order"
+    ]
+  }
+]

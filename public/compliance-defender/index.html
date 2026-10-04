@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compliance Defender — Williams Defender (1981)</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --border: #39ff14;
+      --primary: #39ff14;
+      --text: #39ff14;
+      --muted: #228b22;
+      --accent: #ff66cc;
+      --warn: #ffaa00;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Courier New", Courier, monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    header {
+      text-align: center;
+      max-width: 800px;
+      margin-bottom: 0.75rem;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      color: var(--primary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 0.35rem;
+      line-height: 1.5;
+    }
+
+    #game-root {
+      position: relative;
+      width: min(100%, 800px);
+    }
+
+    .canvas-frame {
+      position: relative;
+      width: 800px;
+      max-width: 100%;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      background: #000000;
+      box-shadow: 0 0 24px rgba(57, 255, 20, 0.15);
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 800 / 600;
+    }
+
+    .touch-controls {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .touch-controls button {
+      position: absolute;
+      pointer-events: auto;
+      border: 1px solid var(--primary);
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.75);
+      color: var(--primary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: none;
+      user-select: none;
+      opacity: 0.8;
+    }
+
+    .touch-controls button:active { background: #1a3a1a; }
+
+    .fire-btn {
+      left: 10px;
+      bottom: 48px;
+      padding: 0.55rem 0.9rem;
+      letter-spacing: 0.08em;
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+
+    .bomb-btn {
+      left: 10px;
+      bottom: 96px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.75rem;
+      border-color: var(--warn);
+      color: var(--warn);
+    }
+
+    .hyper-btn {
+      left: 10px;
+      bottom: 136px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.75rem;
+      border-color: #66ccff;
+      color: #66ccff;
+    }
+
+    .touch-pad {
+      right: 10px;
+      bottom: 48px;
+      display: grid;
+      grid-template-columns: 40px 40px 40px;
+      grid-template-rows: 40px 40px 40px;
+      gap: 3px;
+    }
+
+    .touch-pad .pad-empty { visibility: hidden; pointer-events: none; }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.88);
+      padding: 1rem;
+      z-index: 10;
+    }
+
+    .overlay.hidden { display: none; }
+
+    .panel {
+      background: #000000;
+      border: 2px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .panel h2 {
+      color: var(--primary);
+      font-size: 1.4rem;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.75rem;
+    }
+
+    .panel p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      margin-bottom: 0.65rem;
+      text-align: left;
+    }
+
+    .panel .controls {
+      color: var(--primary);
+      margin: 0.75rem 0;
+      text-align: left;
+      font-size: 0.8rem;
+      line-height: 1.7;
+    }
+
+    .btn {
+      border: 2px solid var(--primary);
+      border-radius: 0;
+      padding: 0.6rem 1.4rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      background: #000000;
+      color: var(--primary);
+      margin-top: 0.5rem;
+    }
+
+    .btn:hover { background: #0d2b0d; }
+
+    .legend {
+      max-width: 800px;
+      margin-top: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #1a3a1a;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .legend strong { color: var(--primary); }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 1.15rem; }
+      .touch-controls button { opacity: 0.9; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Defender <span id="html-build-tag" style="font-size:0.5em;color:#ffaa00;">(loading…)</span></h1>
+    <p>Williams Electronics, 1981 — protect the humans, destroy the invaders.</p>
+  </header>
+
+  <div id="game-root">
+    <div class="canvas-frame">
+      <canvas id="game-canvas" width="800" height="600" aria-label="Defender game canvas"></canvas>
+
+      <div id="start-overlay" class="overlay">
+        <div class="panel">
+          <h2>DEFENDER</h2>
+          <p>
+            Landers abduct humans from the surface. Shoot the lander to free a captive,
+            then <strong style="color:#ff66cc">catch the falling human</strong> and return them to the ground for bonus points.
+            If a lander escapes to the top of the screen, it becomes a fast red <strong style="color:#ff4444">mutant</strong>.
+          </p>
+          <p>
+            Lose every human and the <strong style="color:#ff4444">planet is destroyed</strong> — only mutants remain
+            until you destroy enough to restore the world.
+          </p>
+          <div class="controls">
+            ↑↓←→ Thrust &amp; fly &nbsp;·&nbsp; SPACE Fire<br>
+            B Smart Bomb (clears screen) &nbsp;·&nbsp; H Hyperspace (risky warp)<br>
+            Extra ship + bomb every 10,000 points
+          </div>
+          <button type="button" class="btn" id="btn-start">INSERT COIN</button>
+        </div>
+      </div>
+
+      <div id="game-over-overlay" class="overlay hidden">
+        <div class="panel">
+          <h2>GAME OVER</h2>
+          <p style="text-align:center;">FINAL SCORE: <strong id="final-score" style="color:#ffffff;">0</strong></p>
+          <button type="button" class="btn" id="btn-restart">PLAY AGAIN</button>
+        </div>
+      </div>
+
+      <div class="touch-controls" aria-label="On-screen controls">
+        <button type="button" class="hyper-btn" id="btn-hyperspace">HYPER</button>
+        <button type="button" class="bomb-btn" id="btn-bomb">BOMB</button>
+        <button type="button" class="fire-btn" id="btn-fire">FIRE</button>
+
+        <div class="touch-pad">
+          <span class="pad-empty"></span>
+          <button type="button" id="pad-up" aria-label="Fly up">▲</button>
+          <span class="pad-empty"></span>
+          <button type="button" id="pad-left" aria-label="Fly left">◀</button>
+          <span class="pad-empty"></span>
+          <button type="button" id="pad-right" aria-label="Fly right">▶</button>
+          <span class="pad-empty"></span>
+          <button type="button" id="pad-down" aria-label="Fly down">▼</button>
+          <span class="pad-empty"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <p><strong>Scanner:</strong> pink = humans · green = landers · red = mutants · cyan = bombers · white = you</p>
+    <p><strong>World wraps</strong> left and right — use the radar strip to spot threats beyond the screen edge.</p>
+  </div>
+
+<script>
+"use strict";
+/**
+ * Compliance Defender — Williams Defender (1981) homage
+ * Pure TypeScript + Canvas. No external dependencies.
+ */
+// ─── Constants (tuned to original feel) ────────────────────────────────────
+const BUILD_VERSION = 25;
+/** Playfield — classic 4:3 proportions scaled up */
+const VIEW_W = 800;
+const VIEW_H = 600;
+const SCANNER_H = 36;
+const PLAY_TOP = SCANNER_H + 4;
+const GROUND_Y = VIEW_H - 14;
+const SKY_MIN = PLAY_TOP + 8;
+const WORLD_W = 3200;
+const SHIP_ACCEL = 720;
+const SHIP_MAX_SPEED = 380;
+const SHIP_DRAG = 0.93;
+const LANDER_SPEED = 26;
+const LANDER_ASCEND_MULT = 0.55;
+const MUTANT_MAX_SPEED = 68;
+const MUTANT_ACCEL = 85;
+const MUTANT_DRAG = 0.94;
+const MUTANT_WARMUP_S = 2.2;
+const BOMBER_SPEED = 42;
+const MINE_FALL_SPEED = 85;
+const BULLET_SPEED = 680;
+const FIRE_INTERVAL_MS = 130;
+const BEAM_DURATION_S = 3.5;
+const MAX_BEAM_ASCEND_LANDERS = 1;
+const HUMAN_COUNT = 10;
+const START_LANDERS = 3;
+const START_BOMBERS = 1;
+const SMART_BOMBS_START = 3;
+const EXTRA_LIFE_SCORE = 10000;
+const INVULN_MS = 2600;
+const PLANET_RESTORE_KILLS = 6;
+const PLANET_DESTROYED_MUTANTS = 3;
+const C = {
+    bg: '#000000',
+    terrain: '#39ff14',
+    ship: '#ffffff',
+    lander: '#39ff14',
+    mutant: '#ff4444',
+    bomber: '#66ccff',
+    human: '#ff66cc',
+    laser: '#ffffff',
+    bomb: '#ffaa00',
+    scannerBorder: '#aaaaaa',
+    starDim: '#333333',
+    starBright: '#cccccc',
+};
+// ─── Utilities ─────────────────────────────────────────────────────────────
+function uid() {
+    return Math.random().toString(36).slice(2, 9);
+}
+function wrapX(x) {
+    return ((x % WORLD_W) + WORLD_W) % WORLD_W;
+}
+function worldDelta(ax, bx) {
+    const d = bx - ax;
+    if (d > WORLD_W / 2)
+        return d - WORLD_W;
+    if (d < -WORLD_W / 2)
+        return d + WORLD_W;
+    return d;
+}
+function worldToScreenX(wx, cameraX) {
+    const cam = wrapX(cameraX);
+    let sx = wrapX(wx) - cam;
+    if (sx < -WORLD_W / 2)
+        sx += WORLD_W;
+    if (sx > WORLD_W / 2)
+        sx -= WORLD_W;
+    return sx;
+}
+// ─── UI shell ────────────────────────────────────────────────────────────────
+class GameUI {
+    constructor(root) {
+        this.onStart = null;
+        this.onRestart = null;
+        this.onFire = null;
+        this.onSmartBomb = null;
+        this.onHyperspace = null;
+        this.startOverlay = root.querySelector('#start-overlay');
+        this.gameOverOverlay = root.querySelector('#game-over-overlay');
+        root.querySelector('#btn-start').addEventListener('click', () => this.onStart?.());
+        root.querySelector('#btn-restart').addEventListener('click', () => this.onRestart?.());
+        root.querySelector('#btn-fire')?.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            this.onFire?.();
+        });
+        root.querySelector('#btn-bomb')?.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            this.onSmartBomb?.();
+        });
+        root.querySelector('#btn-hyperspace')?.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            this.onHyperspace?.();
+        });
+    }
+    bindStart(cb) { this.onStart = cb; }
+    bindRestart(cb) { this.onRestart = cb; }
+    showStart(show) {
+        this.startOverlay.classList.toggle('hidden', !show);
+    }
+    showGameOver(show, score) {
+        const el = this.gameOverOverlay.querySelector('#final-score');
+        el.textContent = String(score);
+        this.gameOverOverlay.classList.toggle('hidden', !show);
+    }
+}
+// ─── Game ────────────────────────────────────────────────────────────────────
+class ComplianceDefenderGame {
+    constructor(canvas, ui) {
+        this.ship = { x: WORLD_W / 2, y: GROUND_Y - 48, vx: 0, vy: 0, lives: 3, score: 0, facing: 1 };
+        this.enemies = [];
+        this.humans = [];
+        this.falling = [];
+        this.bullets = [];
+        this.particles = [];
+        this.stars = [];
+        this.cameraX = WORLD_W / 2 - VIEW_W / 2;
+        this.phase = 'paused_start';
+        this.lastTime = 0;
+        this.lastFireAt = 0;
+        this.invulnUntil = 0;
+        this.smartBombs = SMART_BOMBS_START;
+        this.planetDestroyed = false;
+        this.planetRestoreKills = 0;
+        this.wave = 1;
+        this.highScore = 0;
+        this.thrustUp = false;
+        this.thrustDown = false;
+        this.thrustLeft = false;
+        this.thrustRight = false;
+        this.frame = 0;
+        const ctx = canvas.getContext('2d');
+        if (!ctx)
+            throw new Error('Canvas 2D unavailable');
+        this.ctx = ctx;
+        this.canvas = canvas;
+        this.ui = ui;
+        ui.bindStart(() => this.startGame());
+        ui.bindRestart(() => this.startGame());
+        ui.onFire = () => this.fire();
+        ui.onSmartBomb = () => this.smartBomb();
+        ui.onHyperspace = () => this.hyperspace();
+        const kd = (e) => this.onKeyDown(e);
+        const ku = (e) => this.onKeyUp(e);
+        const opts = { capture: true };
+        window.addEventListener('keydown', kd, opts);
+        window.addEventListener('keyup', ku, opts);
+        document.addEventListener('keydown', kd, opts);
+        document.addEventListener('keyup', ku, opts);
+        canvas.tabIndex = 0;
+        canvas.addEventListener('pointerdown', () => canvas.focus());
+        this.bindTouchPad();
+        this.initStars();
+        this.ui.showStart(true);
+        requestAnimationFrame((t) => this.loop(t));
+    }
+    initStars() {
+        this.stars = [];
+        for (let i = 0; i < 120; i++) {
+            this.stars.push({
+                x: Math.random() * VIEW_W,
+                y: PLAY_TOP + Math.random() * (GROUND_Y - PLAY_TOP - 10),
+                speed: 0.15 + Math.random() * 0.5,
+                bright: Math.random() < 0.25,
+            });
+        }
+    }
+    initHumans() {
+        this.humans = [];
+        for (let i = 0; i < HUMAN_COUNT; i++) {
+            this.humans.push({
+                id: uid(),
+                x: (WORLD_W / HUMAN_COUNT) * i + WORLD_W / (HUMAN_COUNT * 2),
+                y: GROUND_Y - 2,
+                onGround: true,
+                walkDir: Math.random() < 0.5 ? -1 : 1,
+            });
+        }
+    }
+    spawnWave() {
+        this.enemies = [];
+        const landerCount = START_LANDERS + Math.floor((this.wave - 1) / 2);
+        const bomberCount = START_BOMBERS + Math.floor((this.wave - 1) / 4);
+        for (let i = 0; i < landerCount; i++) {
+            this.enemies.push(this.makeLander(wrapX(Math.random() * WORLD_W)));
+        }
+        for (let i = 0; i < bomberCount; i++) {
+            this.enemies.push(this.makeBomber(wrapX(Math.random() * WORLD_W)));
+        }
+    }
+    makeLander(x) {
+        return {
+            id: uid(),
+            kind: 'lander',
+            x,
+            y: PLAY_TOP + 20 + Math.random() * 80,
+            vx: 0,
+            vy: 0,
+            phase: 'hunt',
+            targetHumanId: null,
+            carryingHuman: false,
+            beamTimer: 0,
+            bombTimer: 0,
+        };
+    }
+    makeBomber(x) {
+        return {
+            id: uid(),
+            kind: 'bomber',
+            x,
+            y: PLAY_TOP + 30 + Math.random() * 60,
+            vx: Math.random() < 0.5 ? -BOMBER_SPEED : BOMBER_SPEED,
+            vy: 0,
+            phase: 'hunt',
+            targetHumanId: null,
+            carryingHuman: false,
+            beamTimer: 0,
+            bombTimer: 1.5 + Math.random() * 2,
+        };
+    }
+    startGame() {
+        this.ship = { x: WORLD_W / 2, y: GROUND_Y - 48, vx: 0, vy: 0, lives: 3, score: 0, facing: 1 };
+        this.bullets = [];
+        this.particles = [];
+        this.falling = [];
+        this.smartBombs = SMART_BOMBS_START;
+        this.planetDestroyed = false;
+        this.planetRestoreKills = 0;
+        this.wave = 1;
+        this.invulnUntil = 0;
+        this.phase = 'playing';
+        this.cameraX = WORLD_W / 2 - VIEW_W / 2;
+        this.initHumans();
+        this.spawnWave();
+        this.canvas.focus();
+        this.ui.showStart(false);
+        this.ui.showGameOver(false, 0);
+    }
+    humansAlive() {
+        return this.humans.filter((h) => h.onGround).length;
+    }
+    bindTouchPad() {
+        const bind = (id, key) => {
+            const el = document.getElementById(id);
+            if (!el)
+                return;
+            const press = (e) => {
+                e.preventDefault();
+                if (key === 'up')
+                    this.thrustUp = true;
+                if (key === 'down')
+                    this.thrustDown = true;
+                if (key === 'left')
+                    this.thrustLeft = true;
+                if (key === 'right')
+                    this.thrustRight = true;
+            };
+            const release = () => {
+                if (key === 'up')
+                    this.thrustUp = false;
+                if (key === 'down')
+                    this.thrustDown = false;
+                if (key === 'left')
+                    this.thrustLeft = false;
+                if (key === 'right')
+                    this.thrustRight = false;
+            };
+            el.addEventListener('pointerdown', press);
+            el.addEventListener('pointerup', release);
+            el.addEventListener('pointerleave', release);
+        };
+        bind('pad-up', 'up');
+        bind('pad-down', 'down');
+        bind('pad-left', 'left');
+        bind('pad-right', 'right');
+    }
+    onKeyDown(e) {
+        if (e.code === 'Space' || e.key === ' ') {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            this.fire();
+            return;
+        }
+        if (e.code === 'KeyB' || e.key === 'b' || e.key === 'B') {
+            e.preventDefault();
+            this.smartBomb();
+            return;
+        }
+        if (e.code === 'KeyH' || e.key === 'h' || e.key === 'H') {
+            e.preventDefault();
+            this.hyperspace();
+            return;
+        }
+        if (e.code === 'ArrowUp') {
+            e.preventDefault();
+            this.thrustUp = true;
+        }
+        if (e.code === 'ArrowDown') {
+            e.preventDefault();
+            this.thrustDown = true;
+        }
+        if (e.code === 'ArrowLeft') {
+            e.preventDefault();
+            this.thrustLeft = true;
+        }
+        if (e.code === 'ArrowRight') {
+            e.preventDefault();
+            this.thrustRight = true;
+        }
+    }
+    onKeyUp(e) {
+        if (e.code === 'ArrowUp')
+            this.thrustUp = false;
+        if (e.code === 'ArrowDown')
+            this.thrustDown = false;
+        if (e.code === 'ArrowLeft')
+            this.thrustLeft = false;
+        if (e.code === 'ArrowRight')
+            this.thrustRight = false;
+    }
+    fire() {
+        if (this.phase !== 'playing')
+            return;
+        const now = performance.now();
+        if (now - this.lastFireAt < FIRE_INTERVAL_MS)
+            return;
+        this.lastFireAt = now;
+        this.bullets.push({
+            id: uid(),
+            x: wrapX(this.ship.x + this.ship.facing * 10),
+            y: this.ship.y,
+            vx: this.ship.facing * BULLET_SPEED,
+            fromPlayer: true,
+        });
+    }
+    smartBomb() {
+        if (this.phase !== 'playing' || this.smartBombs <= 0)
+            return;
+        this.smartBombs--;
+        const now = performance.now();
+        for (const e of [...this.enemies]) {
+            const sx = worldToScreenX(e.x, this.cameraX);
+            if (sx < -20 || sx > VIEW_W + 20)
+                continue;
+            this.destroyEnemy(e, now, true);
+        }
+        for (let i = 0; i < 40; i++) {
+            this.particles.push({
+                id: uid(),
+                x: this.ship.x + (Math.random() - 0.5) * VIEW_W * 0.8,
+                y: this.ship.y + (Math.random() - 0.5) * 200,
+                vx: (Math.random() - 0.5) * 200,
+                vy: (Math.random() - 0.5) * 200,
+                life: 0.4 + Math.random() * 0.3,
+                color: i % 2 ? '#ffaa00' : '#ffff66',
+            });
+        }
+    }
+    hyperspace() {
+        if (this.phase !== 'playing')
+            return;
+        const now = performance.now();
+        this.ship.x = wrapX(Math.random() * WORLD_W);
+        this.ship.y = SKY_MIN + 20 + Math.random() * (GROUND_Y - SKY_MIN - 40);
+        this.ship.vx = 0;
+        this.ship.vy = 0;
+        if (Math.random() < 0.12) {
+            this.loseLife(now);
+        }
+        else {
+            this.invulnUntil = now + 800;
+            for (let i = 0; i < 12; i++) {
+                this.particles.push({
+                    id: uid(), x: this.ship.x, y: this.ship.y,
+                    vx: (Math.random() - 0.5) * 300, vy: (Math.random() - 0.5) * 300,
+                    life: 0.35, color: '#88ccff',
+                });
+            }
+        }
+    }
+    addScore(pts) {
+        const prev = Math.floor(this.ship.score / EXTRA_LIFE_SCORE);
+        this.ship.score += pts;
+        const next = Math.floor(this.ship.score / EXTRA_LIFE_SCORE);
+        const gained = next - prev;
+        if (gained > 0) {
+            this.ship.lives += gained;
+            this.smartBombs += gained;
+        }
+        if (this.ship.score > this.highScore)
+            this.highScore = this.ship.score;
+    }
+    burst(x, y, color, count = 14) {
+        for (let i = 0; i < count; i++) {
+            const a = (Math.PI * 2 * i) / count;
+            this.particles.push({
+                id: uid(), x, y,
+                vx: Math.cos(a) * (60 + Math.random() * 120),
+                vy: Math.sin(a) * (60 + Math.random() * 120),
+                life: 0.35 + Math.random() * 0.25,
+                color,
+            });
+        }
+    }
+    destroyEnemy(e, _now, silent = false) {
+        const pts = e.kind === 'mutant' ? 300 : e.kind === 'bomber' ? 250 : 150;
+        this.addScore(pts);
+        this.burst(e.x, e.y, e.kind === 'mutant' ? '#ff6644' : '#66ff44');
+        if (e.carryingHuman && e.targetHumanId) {
+            const h = this.humans.find((human) => human.id === e.targetHumanId);
+            if (h) {
+                this.falling.push({ id: h.id, x: e.x, y: e.y + 8, vy: 0 });
+                h.onGround = false;
+            }
+        }
+        this.enemies = this.enemies.filter((en) => en.id !== e.id);
+        if (this.planetDestroyed) {
+            this.planetRestoreKills++;
+            if (this.planetRestoreKills >= PLANET_RESTORE_KILLS) {
+                this.planetDestroyed = false;
+                this.planetRestoreKills = 0;
+                this.initHumans();
+                this.spawnWave();
+            }
+        }
+        else if (this.enemies.length === 0 && !silent) {
+            this.wave++;
+            this.addScore(500);
+            this.spawnWave();
+        }
+    }
+    loseLife(now) {
+        this.ship.lives--;
+        this.invulnUntil = now + INVULN_MS;
+        this.burst(this.ship.x, this.ship.y, '#ffffff', 20);
+        if (this.ship.lives <= 0) {
+            this.phase = 'game_over';
+            this.ui.showGameOver(true, this.ship.score);
+        }
+    }
+    screenPos(wx, wy) {
+        const x = worldToScreenX(wx, this.cameraX);
+        return { x, y: wy, vis: x > -40 && x < VIEW_W + 40 };
+    }
+    updateShip(dt) {
+        if (this.thrustLeft) {
+            this.ship.vx -= SHIP_ACCEL * dt;
+            this.ship.facing = -1;
+        }
+        if (this.thrustRight) {
+            this.ship.vx += SHIP_ACCEL * dt;
+            this.ship.facing = 1;
+        }
+        if (this.thrustUp)
+            this.ship.vy -= SHIP_ACCEL * dt;
+        if (this.thrustDown)
+            this.ship.vy += SHIP_ACCEL * dt;
+        this.ship.vx *= SHIP_DRAG;
+        this.ship.vy *= SHIP_DRAG;
+        const spd = Math.hypot(this.ship.vx, this.ship.vy);
+        if (spd > SHIP_MAX_SPEED) {
+            this.ship.vx = (this.ship.vx / spd) * SHIP_MAX_SPEED;
+            this.ship.vy = (this.ship.vy / spd) * SHIP_MAX_SPEED;
+        }
+        this.ship.x = wrapX(this.ship.x + this.ship.vx * dt);
+        this.ship.y += this.ship.vy * dt;
+        this.ship.y = Math.max(SKY_MIN, Math.min(GROUND_Y - 10, this.ship.y));
+        const margin = 120;
+        const sx = worldToScreenX(this.ship.x, this.cameraX);
+        if (sx < margin)
+            this.cameraX = wrapX(this.ship.x - margin);
+        else if (sx > VIEW_W - margin)
+            this.cameraX = wrapX(this.ship.x - (VIEW_W - margin));
+    }
+    updateHumans(dt) {
+        for (const h of this.humans) {
+            if (!h.onGround)
+                continue;
+            h.x = wrapX(h.x + h.walkDir * 18 * dt);
+            if (Math.random() < 0.004)
+                h.walkDir *= -1;
+        }
+    }
+    updateEnemies(dt, now) {
+        for (const e of this.enemies) {
+            if (e.kind === 'bomber') {
+                e.x = wrapX(e.x + e.vx * dt);
+                e.bombTimer -= dt;
+                if (e.bombTimer <= 0) {
+                    e.bombTimer = 2 + Math.random() * 2.5;
+                    this.bullets.push({
+                        id: uid(), x: e.x, y: e.y + 6, vx: 0, fromPlayer: false,
+                    });
+                }
+                continue;
+            }
+            if (e.kind === 'mutant') {
+                let chase = 1;
+                if (e.beamTimer > 0) {
+                    e.beamTimer -= dt;
+                    chase = 0.25;
+                }
+                const dx = worldDelta(e.x, this.ship.x);
+                const dy = this.ship.y - e.y;
+                const len = Math.hypot(dx, dy) || 1;
+                const wantVx = (dx / len) * MUTANT_MAX_SPEED * chase;
+                const wantVy = (dy / len) * MUTANT_MAX_SPEED * chase;
+                const steer = MUTANT_ACCEL * dt;
+                e.vx += Math.max(-steer, Math.min(steer, wantVx - e.vx));
+                e.vy += Math.max(-steer, Math.min(steer, wantVy - e.vy));
+                e.vx *= MUTANT_DRAG;
+                e.vy *= MUTANT_DRAG;
+                const spd = Math.hypot(e.vx, e.vy);
+                if (spd > MUTANT_MAX_SPEED) {
+                    e.vx = (e.vx / spd) * MUTANT_MAX_SPEED;
+                    e.vy = (e.vy / spd) * MUTANT_MAX_SPEED;
+                }
+                e.x = wrapX(e.x + e.vx * dt);
+                e.y += e.vy * dt;
+                e.y = Math.max(PLAY_TOP + 4, Math.min(GROUND_Y - 20, e.y));
+                continue;
+            }
+            // Lander
+            if (e.phase === 'hunt') {
+                const activeAbductors = this.enemies.filter((en) => en.kind === 'lander' && (en.phase === 'beam' || en.phase === 'ascend')).length;
+                const target = this.nearestHuman(e.x, activeAbductors >= MAX_BEAM_ASCEND_LANDERS);
+                if (target) {
+                    e.targetHumanId = target.id;
+                    const dy = target.y - 14 - e.y;
+                    const dx = worldDelta(e.x, target.x);
+                    const len = Math.hypot(dx, dy) || 1;
+                    e.x = wrapX(e.x + (dx / len) * LANDER_SPEED * dt);
+                    e.y += (dy / len) * LANDER_SPEED * dt;
+                    if (Math.abs(dy) < 10 && Math.abs(dx) < 14 && activeAbductors < MAX_BEAM_ASCEND_LANDERS) {
+                        e.phase = 'beam';
+                        e.beamTimer = BEAM_DURATION_S;
+                    }
+                }
+                else {
+                    e.x = wrapX(e.x + (Math.random() < 0.5 ? -1 : 1) * LANDER_SPEED * 0.35 * dt);
+                    e.y += Math.sin(this.frame * 0.02 + e.x * 0.01) * LANDER_SPEED * 0.15 * dt;
+                }
+            }
+            else if (e.phase === 'beam') {
+                e.beamTimer -= dt;
+                if (e.beamTimer <= 0) {
+                    const h = this.humans.find((human) => human.id === e.targetHumanId);
+                    if (h?.onGround) {
+                        h.onGround = false;
+                        e.carryingHuman = true;
+                        e.phase = 'ascend';
+                    }
+                    else {
+                        e.phase = 'hunt';
+                    }
+                }
+            }
+            else if (e.phase === 'ascend') {
+                e.y -= LANDER_SPEED * LANDER_ASCEND_MULT * dt;
+                const h = this.humans.find((human) => human.id === e.targetHumanId);
+                if (h)
+                    h.y = e.y + 10;
+                if (e.y <= PLAY_TOP + 4) {
+                    e.kind = 'mutant';
+                    e.carryingHuman = false;
+                    e.vx = (Math.random() - 0.5) * 30;
+                    e.vy = -18;
+                    e.beamTimer = MUTANT_WARMUP_S;
+                    if (h)
+                        h.onGround = false;
+                }
+            }
+        }
+        if (!this.planetDestroyed && this.humansAlive() === 0) {
+            this.planetDestroyed = true;
+            this.planetRestoreKills = 0;
+            this.enemies = this.enemies.filter((en) => en.kind === 'mutant');
+            for (let i = 0; i < PLANET_DESTROYED_MUTANTS; i++) {
+                this.enemies.push({
+                    ...this.makeLander(wrapX(Math.random() * WORLD_W)),
+                    kind: 'mutant',
+                    y: PLAY_TOP + 40 + Math.random() * 120,
+                    vx: (Math.random() - 0.5) * 24,
+                    vy: 0,
+                    beamTimer: MUTANT_WARMUP_S + i * 0.8,
+                });
+            }
+        }
+        if (now >= this.invulnUntil) {
+            for (const e of this.enemies) {
+                const sp = this.screenPos(e.x, e.y);
+                const ss = this.screenPos(this.ship.x, this.ship.y);
+                const hitR = e.kind === 'mutant' ? 14 : e.kind === 'bomber' ? 12 : 11;
+                if (Math.hypot(sp.x - ss.x, sp.y - ss.y) < hitR) {
+                    this.loseLife(now);
+                    return;
+                }
+            }
+        }
+    }
+    isHumanTargeted(humanId) {
+        return this.enemies.some((e) => e.kind === 'lander'
+            && (e.phase === 'beam' || e.phase === 'ascend')
+            && e.targetHumanId === humanId);
+    }
+    nearestHuman(wx, allowClaimed = false) {
+        let best = null;
+        let bestD = Infinity;
+        for (const h of this.humans) {
+            if (!h.onGround)
+                continue;
+            if (!allowClaimed && this.isHumanTargeted(h.id))
+                continue;
+            const d = Math.abs(worldDelta(wx, h.x));
+            if (d < bestD) {
+                bestD = d;
+                best = h;
+            }
+        }
+        if (!best && !allowClaimed)
+            return this.nearestHuman(wx, true);
+        return best;
+    }
+    updateFalling(dt, _now) {
+        const remaining = [];
+        for (const f of this.falling) {
+            f.vy += 280 * dt;
+            f.y += f.vy * dt;
+            const ss = this.screenPos(this.ship.x, this.ship.y);
+            const fs = this.screenPos(f.x, f.y);
+            if (Math.hypot(ss.x - fs.x, ss.y - fs.y) < 18) {
+                const h = this.humans.find((human) => human.id === f.id);
+                if (h) {
+                    h.onGround = true;
+                    h.x = f.x;
+                    h.y = GROUND_Y - 2;
+                    this.addScore(500);
+                    this.burst(f.x, f.y, '#ff66cc', 8);
+                }
+                continue;
+            }
+            if (f.y >= GROUND_Y - 2) {
+                this.burst(f.x, GROUND_Y, '#ff4444', 6);
+                continue;
+            }
+            remaining.push(f);
+        }
+        this.falling = remaining;
+    }
+    updateBullets(dt, now) {
+        const keep = [];
+        for (const b of this.bullets) {
+            if (b.fromPlayer) {
+                b.x = wrapX(b.x + b.vx * dt);
+            }
+            else {
+                b.y += MINE_FALL_SPEED * dt;
+            }
+            const bs = this.screenPos(b.x, b.y);
+            if (bs.y > GROUND_Y + 10 || (!bs.vis && b.fromPlayer))
+                continue;
+            if (b.fromPlayer) {
+                let hit = false;
+                for (const e of this.enemies) {
+                    const es = this.screenPos(e.x, e.y);
+                    if (Math.hypot(bs.x - es.x, bs.y - es.y) < (e.kind === 'bomber' ? 16 : 12)) {
+                        this.destroyEnemy(e, now);
+                        hit = true;
+                        break;
+                    }
+                }
+                if (!hit)
+                    keep.push(b);
+            }
+            else {
+                const ss = this.screenPos(this.ship.x, this.ship.y);
+                if (now >= this.invulnUntil && Math.hypot(bs.x - ss.x, bs.y - ss.y) < 10) {
+                    this.loseLife(now);
+                }
+                else if (b.y < GROUND_Y + 20) {
+                    keep.push(b);
+                }
+            }
+        }
+        this.bullets = keep;
+    }
+    updateParticles(dt) {
+        this.particles = this.particles
+            .map((p) => ({ ...p, x: p.x + p.vx * dt, y: p.y + p.vy * dt, life: p.life - dt }))
+            .filter((p) => p.life > 0);
+    }
+    update(dt, now) {
+        this.frame++;
+        this.updateShip(dt);
+        this.updateHumans(dt);
+        this.updateEnemies(dt, now);
+        this.updateFalling(dt, now);
+        this.updateBullets(dt, now);
+        this.updateParticles(dt);
+    }
+    // ─── Drawing (pixel-art style) ─────────────────────────────────────────────
+    drawShip(x, y, blink) {
+        if (blink)
+            return;
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(this.ship.facing, 1);
+        ctx.fillStyle = C.ship;
+        ctx.beginPath();
+        ctx.moveTo(10, 0);
+        ctx.lineTo(-8, -5);
+        ctx.lineTo(-6, 0);
+        ctx.lineTo(-8, 5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+    drawLander(x, y) {
+        const ctx = this.ctx;
+        ctx.fillStyle = C.lander;
+        ctx.fillRect(x - 5, y - 3, 10, 6);
+        ctx.fillRect(x - 7, y + 2, 3, 4);
+        ctx.fillRect(x + 4, y + 2, 3, 4);
+        ctx.fillRect(x - 2, y - 6, 4, 3);
+    }
+    drawMutant(x, y) {
+        const ctx = this.ctx;
+        ctx.fillStyle = C.mutant;
+        ctx.beginPath();
+        ctx.moveTo(x, y - 8);
+        ctx.lineTo(x - 9, y + 6);
+        ctx.lineTo(x + 9, y + 6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillRect(x - 3, y - 2, 6, 4);
+    }
+    drawBomber(x, y, vx) {
+        const ctx = this.ctx;
+        ctx.fillStyle = C.bomber;
+        const dir = vx > 0 ? 1 : -1;
+        ctx.fillRect(x - 6 * dir, y - 2, 12 * dir, 4);
+        ctx.fillRect(x - 2, y - 5, 4, 3);
+    }
+    drawHuman(x, y) {
+        const ctx = this.ctx;
+        ctx.fillStyle = C.human;
+        ctx.fillRect(x - 1, y - 8, 2, 5);
+        ctx.fillRect(x - 3, y - 3, 6, 2);
+        ctx.fillRect(x - 3, y - 1, 2, 3);
+        ctx.fillRect(x + 1, y - 1, 2, 3);
+    }
+    drawScanner() {
+        const ctx = this.ctx;
+        const rx = VIEW_W / 2 - 180;
+        const rw = 360;
+        ctx.fillStyle = C.bg;
+        ctx.fillRect(0, 0, VIEW_W, SCANNER_H);
+        ctx.strokeStyle = C.scannerBorder;
+        ctx.strokeRect(rx, 4, rw, SCANNER_H - 8);
+        const scale = rw / WORLD_W;
+        const mid = SCANNER_H / 2 + 2;
+        for (const h of this.humans) {
+            if (!h.onGround)
+                continue;
+            ctx.fillStyle = C.human;
+            ctx.fillRect(rx + wrapX(h.x) * scale, mid, 2, 2);
+        }
+        for (const e of this.enemies) {
+            ctx.fillStyle = e.kind === 'mutant' ? C.mutant : e.kind === 'bomber' ? C.bomber : C.lander;
+            const py = mid - 4 + (e.y / VIEW_H) * 8;
+            ctx.fillRect(rx + wrapX(e.x) * scale, py, 2, 2);
+        }
+        ctx.fillStyle = C.ship;
+        ctx.fillRect(rx + wrapX(this.ship.x) * scale, mid - 3 + (this.ship.y / VIEW_H) * 6, 3, 2);
+        ctx.fillStyle = C.ship;
+        ctx.font = 'bold 14px "Courier New", monospace';
+        ctx.fillText(`SCORE ${String(this.ship.score).padStart(6, '0')}`, 8, 22);
+        ctx.fillText(`HI ${String(this.highScore).padStart(6, '0')}`, VIEW_W / 2 - 50, 22);
+        ctx.textAlign = 'right';
+        let lx = VIEW_W - 8;
+        for (let i = 0; i < this.ship.lives; i++) {
+            this.drawShip(lx, 18, false);
+            lx -= 18;
+        }
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#ffaa00';
+        ctx.font = '12px "Courier New", monospace';
+        ctx.fillText(`BOMBS ${this.smartBombs}`, VIEW_W - 90, SCANNER_H - 2);
+    }
+    drawTerrain() {
+        const ctx = this.ctx;
+        ctx.strokeStyle = this.planetDestroyed ? '#ff2222' : C.terrain;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let sx = 0; sx <= VIEW_W; sx++) {
+            const wx = wrapX(this.cameraX + sx);
+            const h = 3 + Math.abs(Math.sin(wx * 0.018) * 4 + Math.sin(wx * 0.07) * 2);
+            ctx.lineTo(sx, GROUND_Y - h);
+        }
+        ctx.stroke();
+    }
+    render(now) {
+        const ctx = this.ctx;
+        ctx.fillStyle = C.bg;
+        ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+        this.drawScanner();
+        for (const s of this.stars) {
+            const sx = ((s.x - this.cameraX * s.speed * 0.02) % VIEW_W + VIEW_W) % VIEW_W;
+            ctx.fillStyle = s.bright ? C.starBright : C.starDim;
+            ctx.fillRect(sx, s.y, s.bright ? 2 : 1, s.bright ? 2 : 1);
+        }
+        this.drawTerrain();
+        for (const h of this.humans) {
+            if (!h.onGround)
+                continue;
+            const p = this.screenPos(h.x, h.y);
+            if (!p.vis)
+                continue;
+            this.drawHuman(p.x, p.y);
+        }
+        for (const f of this.falling) {
+            const p = this.screenPos(f.x, f.y);
+            if (p.vis)
+                this.drawHuman(p.x, p.y);
+        }
+        for (const e of this.enemies) {
+            const p = this.screenPos(e.x, e.y);
+            if (!p.vis)
+                continue;
+            if (e.kind === 'mutant')
+                this.drawMutant(p.x, p.y);
+            else if (e.kind === 'bomber')
+                this.drawBomber(p.x, p.y, e.vx);
+            else {
+                this.drawLander(p.x, p.y);
+                if (e.phase === 'beam' && e.targetHumanId) {
+                    const h = this.humans.find((human) => human.id === e.targetHumanId);
+                    if (h) {
+                        const hp = this.screenPos(h.x, h.y);
+                        ctx.strokeStyle = 'rgba(57,255,20,0.5)';
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y + 4);
+                        ctx.lineTo(hp.x, hp.y - 4);
+                        ctx.stroke();
+                    }
+                }
+                if (e.carryingHuman) {
+                    this.drawHuman(p.x, p.y + 10);
+                }
+            }
+        }
+        for (const b of this.bullets) {
+            const p = this.screenPos(b.x, b.y);
+            if (!p.vis)
+                continue;
+            ctx.fillStyle = b.fromPlayer ? C.laser : C.bomb;
+            if (b.fromPlayer) {
+                ctx.fillRect(p.x - 3, p.y, 6, 1);
+            }
+            else {
+                ctx.fillRect(p.x - 1, p.y - 1, 3, 3);
+            }
+        }
+        for (const p of this.particles) {
+            const sp = this.screenPos(p.x, p.y);
+            if (!sp.vis)
+                continue;
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.life * 2;
+            ctx.fillRect(sp.x, sp.y, 2, 2);
+            ctx.globalAlpha = 1;
+        }
+        const blink = now < this.invulnUntil && Math.floor(now / 80) % 2 === 0;
+        const ss = this.screenPos(this.ship.x, this.ship.y);
+        this.drawShip(ss.x, ss.y, blink);
+        // CRT scanlines
+        ctx.fillStyle = 'rgba(0,0,0,0.12)';
+        for (let y = PLAY_TOP; y < VIEW_H; y += 3) {
+            ctx.fillRect(0, y, VIEW_W, 1);
+        }
+        if (this.planetDestroyed) {
+            const flash = Math.floor(now / 400) % 2 === 0;
+            ctx.fillStyle = flash ? '#ff2222' : '#aa1111';
+            ctx.font = 'bold 16px "Courier New", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('PLANET DESTROYED', VIEW_W / 2, PLAY_TOP + 28);
+            ctx.textAlign = 'left';
+        }
+        ctx.fillStyle = '#333';
+        ctx.font = '10px "Courier New", monospace';
+        ctx.fillText(`WAVE ${this.wave}`, VIEW_W - 70, VIEW_H - 4);
+        ctx.fillText(`BUILD ${BUILD_VERSION}`, 8, VIEW_H - 4);
+    }
+    loop(ts) {
+        if (!this.lastTime)
+            this.lastTime = ts;
+        const dt = Math.min(0.05, (ts - this.lastTime) / 1000);
+        this.lastTime = ts;
+        if (this.phase === 'playing')
+            this.update(dt, ts);
+        this.render(ts);
+        requestAnimationFrame((t) => this.loop(t));
+    }
+}
+function boot() {
+    const canvas = document.getElementById('game-canvas');
+    const root = document.getElementById('game-root');
+    if (!canvas || !root)
+        return;
+    canvas.width = VIEW_W;
+    canvas.height = VIEW_H;
+    const tag = document.getElementById('html-build-tag');
+    if (tag)
+        tag.textContent = `(BUILD ${BUILD_VERSION})`;
+    const ui = new GameUI(root);
+    new ComplianceDefenderGame(canvas, ui);
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+}
+else {
+    boot();
+}
+</script>
+</body>
+</html>

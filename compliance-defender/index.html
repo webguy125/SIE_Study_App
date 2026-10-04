@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compliance Defender — Williams Defender (1981)</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --border: #39ff14;
+      --primary: #39ff14;
+      --text: #39ff14;
+      --muted: #228b22;
+      --accent: #ff66cc;
+      --warn: #ffaa00;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Courier New", Courier, monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    header {
+      text-align: center;
+      max-width: 800px;
+      margin-bottom: 0.75rem;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      color: var(--primary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 0.35rem;
+      line-height: 1.5;
+    }
+
+    #game-root {
+      position: relative;
+      width: min(100%, 800px);
+    }
+
+    .canvas-frame {
+      position: relative;
+      width: 800px;
+      max-width: 100%;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      background: #000000;
+      box-shadow: 0 0 24px rgba(57, 255, 20, 0.15);
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 800 / 600;
+    }
+
+    .touch-controls {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .touch-controls button {
+      position: absolute;
+      pointer-events: auto;
+      border: 1px solid var(--primary);
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.75);
+      color: var(--primary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: none;
+      user-select: none;
+      opacity: 0.8;
+    }
+
+    .touch-controls button:active { background: #1a3a1a; }
+
+    .fire-btn {
+      left: 10px;
+      bottom: 48px;
+      padding: 0.55rem 0.9rem;
+      letter-spacing: 0.08em;
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+
+    .bomb-btn {
+      left: 10px;
+      bottom: 96px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.75rem;
+      border-color: var(--warn);
+      color: var(--warn);
+    }
+
+    .hyper-btn {
+      left: 10px;
+      bottom: 136px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.75rem;
+      border-color: #66ccff;
+      color: #66ccff;
+    }
+
+    .touch-pad {
+      right: 10px;
+      bottom: 48px;
+      display: grid;
+      grid-template-columns: 40px 40px 40px;
+      grid-template-rows: 40px 40px 40px;
+      gap: 3px;
+    }
+
+    .touch-pad .pad-empty { visibility: hidden; pointer-events: none; }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.88);
+      padding: 1rem;
+      z-index: 10;
+    }
+
+    .overlay.hidden { display: none; }
+
+    .panel {
+      background: #000000;
+      border: 2px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .panel h2 {
+      color: var(--primary);
+      font-size: 1.4rem;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.75rem;
+    }
+
+    .panel p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      margin-bottom: 0.65rem;
+      text-align: left;
+    }
+
+    .panel .controls {
+      color: var(--primary);
+      margin: 0.75rem 0;
+      text-align: left;
+      font-size: 0.8rem;
+      line-height: 1.7;
+    }
+
+    .btn {
+      border: 2px solid var(--primary);
+      border-radius: 0;
+      padding: 0.6rem 1.4rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      background: #000000;
+      color: var(--primary);
+      margin-top: 0.5rem;
+    }
+
+    .btn:hover { background: #0d2b0d; }
+
+    .legend {
+      max-width: 800px;
+      margin-top: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #1a3a1a;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .legend strong { color: var(--primary); }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 1.15rem; }
+      .touch-controls button { opacity: 0.9; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Defender <span id="html-build-tag" style="font-size:0.5em;color:#ffaa00;">(loading…)</span></h1>
+    <p>Williams Electronics, 1981 — protect the humans, destroy the invaders.</p>
+  </header>
+
+  <div id="game-root">
+    <div class="canvas-frame">
+      <canvas id="game-canvas" width="800" height="600" aria-label="Defender game canvas"></canvas>
+
+      <div id="start-overlay" class="overlay">
+        <div class="panel">
+          <h2>DEFENDER</h2>
+          <p>
+            Landers abduct humans from the surface. Shoot the lander to free a captive,
+            then <strong style="color:#ff66cc">catch the falling human</strong> and return them to the ground for bonus points.
+            If a lander escapes to the top of the screen, it becomes a fast red <strong style="color:#ff4444">mutant</strong>.
+          </p>
+          <p>
+            Lose every human and the <strong style="color:#ff4444">planet is destroyed</strong> — only mutants remain
+            until you destroy enough to restore the world.
+          </p>
+          <div class="controls">
+            ↑↓←→ Thrust &amp; fly &nbsp;·&nbsp; SPACE Fire<br>
+            B Smart Bomb (clears screen) &nbsp;·&nbsp; H Hyperspace (risky warp)<br>
+            Extra ship + bomb every 10,000 points
+          </div>
+          <button type="button" class="btn" id="btn-start">INSERT COIN</button>
+        </div>
+      </div>
+
+      <div id="game-over-overlay" class="overlay hidden">
+        <div class="panel">
+          <h2>GAME OVER</h2>
+          <p style="text-align:center;">FINAL SCORE: <strong id="final-score" style="color:#ffffff;">0</strong></p>
+          <button type="button" class="btn" id="btn-restart">PLAY AGAIN</button>
+        </div>
+      </div>
+
+      <div class="touch-controls" aria-label="On-screen controls">
+        <button type="button" class="hyper-btn" id="btn-hyperspace">HYPER</button>
+        <button type="button" class="bomb-btn" id="btn-bomb">BOMB</button>
+        <button type="button" class="fire-btn" id="btn-fire">FIRE</button>
+
+        <div class="touch-pad">
+          <span class="pad-empty"></span>
+          <button type="button" id="pad-up" aria-label="Fly up">▲</button>
+          <span class="pad-empty"></span>
+          <button type="button" id="pad-left" aria-label="Fly left">◀</button>
+          <span class="pad-empty"></span>
+          <button type="button" id="pad-right" aria-label="Fly right">▶</button>
+          <span class="pad-empty"></span>
+          <button type="button" id="pad-down" aria-label="Fly down">▼</button>
+          <span class="pad-empty"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <p><strong>Scanner:</strong> pink = humans · green = landers · red = mutants · cyan = bombers · white = you</p>
+    <p><strong>World wraps</strong> left and right — use the radar strip to spot threats beyond the screen edge.</p>
+  </div>
+
+  <!-- GAME_SCRIPT_INLINE -->
+</body>
+</html>
