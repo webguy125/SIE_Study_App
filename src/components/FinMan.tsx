@@ -399,8 +399,8 @@ function placeGhostInPen(g: Ghost, gameTime: number, releaseDelayMs: number): vo
   g.releaseAt = gameTime + releaseDelayMs;
 }
 
-function releaseGhostFromPen(g: Ghost): void {
-  g.mode = 'chase';
+function releaseGhostFromPen(g: Ghost, frightened: boolean): void {
+  g.mode = frightened ? 'frightened' : 'chase';
   g.dir = 'up';
 }
 
@@ -1028,7 +1028,7 @@ export default function FinMan() {
         drawMaze(ctx, s.tiles, s.frame);
         drawBull(ctx, s.player);
         for (const g of s.ghosts) {
-          const frightened = s.powerUntil > now && g.mode !== 'eaten' && g.mode !== 'house';
+          const frightened = s.powerUntil > s.gameTime && g.mode !== 'eaten';
           drawGhost(ctx, g, frightened, Math.floor(s.frame / 8) % 2 === 0);
         }
         return;
@@ -1064,7 +1064,7 @@ export default function FinMan() {
           cell.hasDot = false;
           if (cell.base === 4) {
             s.score += POWER_SCORE;
-            s.powerUntil = now + POWER_MS;
+            s.powerUntil = s.gameTime + POWER_MS;
             for (const g of s.ghosts) {
               if (g.mode !== 'eaten' && g.mode !== 'house') g.mode = 'frightened';
             }
@@ -1092,7 +1092,7 @@ export default function FinMan() {
         }
       }
 
-      const frightenedActive = s.powerUntil > now;
+      const frightenedActive = s.powerUntil > s.gameTime;
       if (wasFrightenedRef.current && !frightenedActive) {
         sounds.stopFrightenedSiren();
       }
@@ -1102,7 +1102,7 @@ export default function FinMan() {
         const g = s.ghosts[i];
         if (g.mode === 'house') {
           if (s.gameTime >= g.releaseAt) {
-            releaseGhostFromPen(g);
+            releaseGhostFromPen(g, frightenedActive);
           } else {
             continue;
           }
@@ -1122,29 +1122,29 @@ export default function FinMan() {
           continue;
         }
 
+        if (frightenedActive) g.mode = 'frightened';
+        else if (g.mode === 'frightened') g.mode = 'chase';
+
         if (atTileCenter(g.x, g.y)) {
           let target = posToTile(s.player.x, s.player.y);
-          if (g.mode === 'frightened' && frightenedActive) {
+          if (frightenedActive) {
             target = { col: COLS - 1 - target.col, row: ROWS - 1 - target.row };
           } else if (g.id === 'blinky') target = blinkyTarget(s.player);
           else if (g.id === 'pinky') target = pinkyTarget(s.player);
           else if (g.id === 'inky') target = inkyTarget(s.player, s.score, i);
           else target = clydeTarget(s.player, g);
 
-          const fright = frightenedActive && g.mode === 'frightened';
-          g.dir = chooseGhostDir(g, target, s.tiles, fright);
+          g.dir = chooseGhostDir(g, target, s.tiles, frightenedActive);
         }
 
-        const speed = frightenedActive && g.mode === 'frightened' ? FRIGHTENED_SPEED : GHOST_SPEED;
+        const speed = frightenedActive ? FRIGHTENED_SPEED : GHOST_SPEED;
         const gStep = moveEntity(g.x, g.y, g.dir, speed, s.tiles);
         g.x = gStep.x;
         g.y = gStep.y;
         g.dir = gStep.dir;
 
-        if (!frightenedActive && g.mode === 'frightened') g.mode = 'chase';
-
         if (dist(g.x, g.y, s.player.x, s.player.y) < TILE * 0.55) {
-          if (frightenedActive && g.mode === 'frightened') {
+          if (frightenedActive) {
             placeGhostInPen(g, s.gameTime, GHOST_REENTER_PEN_MS);
             s.score += GHOST_SCORE;
             sounds.playEatGhost();
@@ -1171,7 +1171,7 @@ export default function FinMan() {
       drawMaze(ctx, s.tiles, s.frame);
       drawBull(ctx, s.player);
       for (const g of s.ghosts) {
-        const fright = frightenedActive && g.mode === 'frightened';
+        const fright = frightenedActive && g.mode !== 'eaten';
         drawGhost(ctx, g, fright, Math.floor(s.frame / 8) % 2 === 0);
       }
     };
@@ -1298,7 +1298,7 @@ export default function FinMan() {
         <p><strong>Ghosts:</strong> 🔴 Inflation (direct chase) · 🩷 Interest Rate (intercept) · 🩵 Liquidity (corner patrol when ahead) · 🟠 Regulatory (chaotic). A catch sends every ghost back to the pen before the question. Eating one sends that ghost straight to the pen.</p>
         <p><strong>Subjects:</strong> The bar above the maze holds each outline topic for 20 seconds, then moves to the next. Clearing a section reviews any topic you have not finished.</p>
         <p><strong>Checkpoints:</strong> {countCheckpoints()} gold gateways per section still stop you for a question. The question pool now covers that section’s outline.</p>
-        <p><strong>Controls:</strong> Arrow keys or WASD to move the Bull 🐂 · Power pellets turn ghosts vulnerable · Checkpoints and SEC audits pause for questions.</p>
+        <p><strong>Controls:</strong> Arrow keys or WASD to move the Bull 🐂 · Power pellets turn every ghost blue. Touching a blue ghost sends it to the pen. · Checkpoints and SEC audits pause for questions.</p>
         <p><strong>Sound:</strong> Classic arcade waka-waka, power pellet, ghost, and death effects — click the maze or press a key once to enable audio.</p>
         <button type="button" className="btn" onClick={startGame}>New Game</button>
       </div>
