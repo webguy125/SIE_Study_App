@@ -710,6 +710,8 @@ export default function FinMan() {
   const pendingSecAuditRef = useRef(false);
   const wrongLoseLifeRef = useRef(false);
   const wasFrightenedRef = useRef(false);
+  const touchDirRef = useRef<Dir>('none');
+  const swipeOriginRef = useRef<{ x: number; y: number; pointerId: number } | null>(null);
   const sounds = useMemo(() => getFinManSounds(), []);
 
   const [hud, setHud] = useState<HudState>({
@@ -930,7 +932,7 @@ export default function FinMan() {
     setWrongBorder(false);
     setSelectedOption(null);
     setStatusMsg('');
-    setGameMsg('Use arrow keys or WASD. Each subject stays up for 20 seconds.');
+    setGameMsg('Swipe, tap the arrow pad, or use arrow keys / WASD. Each subject stays up for 20 seconds.');
     setEndPhase('none');
     syncHud(s);
     sounds.unlock();
@@ -1038,7 +1040,10 @@ export default function FinMan() {
       const anyMoveKey =
         keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight
         || keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD;
-      if (anyMoveKey) {
+      const heldTouch = touchDirRef.current;
+      if (heldTouch !== 'none') {
+        s.player.nextDir = heldTouch;
+      } else if (anyMoveKey) {
         s.player.nextDir = lastInputDirRef.current;
       }
 
@@ -1180,6 +1185,65 @@ export default function FinMan() {
     return () => cancelAnimationFrame(raf);
   }, [pauseForQuestion, syncHud, sounds]);
 
+  const queueDirection = useCallback((dir: Dir) => {
+    lastInputDirRef.current = dir;
+    const s = stateRef.current;
+    if (s.running && s.phase === 'playing') {
+      s.player.nextDir = dir;
+      applyQueuedDirection(s.player, s.tiles);
+    }
+  }, []);
+
+  const holdDirection = useCallback((dir: Exclude<Dir, 'none'>) => {
+    touchDirRef.current = dir;
+    queueDirection(dir);
+  }, [queueDirection]);
+
+  const releaseDirection = useCallback((dir: Exclude<Dir, 'none'>) => {
+    if (touchDirRef.current === dir) touchDirRef.current = 'none';
+  }, []);
+
+  const onPadPointerDown = (dir: Exclude<Dir, 'none'>) => (e: React.PointerEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    sounds.unlock();
+    holdDirection(dir);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* A lost pointer id should still leave the queued direction in place. */
+    }
+  };
+
+  const onCanvasPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    sounds.unlock();
+    canvasRef.current?.focus();
+    if (e.pointerType === 'mouse') return;
+    swipeOriginRef.current = { x: e.clientX, y: e.clientY, pointerId: e.pointerId };
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* Swipe still follows pointermove while the finger is on the maze. */
+    }
+  };
+
+  const onCanvasPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const origin = swipeOriginRef.current;
+    if (!origin || origin.pointerId !== e.pointerId) return;
+    const dx = e.clientX - origin.x;
+    const dy = e.clientY - origin.y;
+    if (Math.hypot(dx, dy) < 24) return;
+    const dir: Dir = Math.abs(dx) > Math.abs(dy)
+      ? (dx > 0 ? 'right' : 'left')
+      : (dy > 0 ? 'down' : 'up');
+    queueDirection(dir);
+    origin.x = e.clientX;
+    origin.y = e.clientY;
+  };
+
+  const endCanvasSwipe = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (swipeOriginRef.current?.pointerId === e.pointerId) swipeOriginRef.current = null;
+  };
+
   return (
     <div className="page finman-page">
       <h1>FIN-MAN</h1>
@@ -1208,17 +1272,18 @@ export default function FinMan() {
         </div>
 
         <div className="finman-stage">
+          <div className="finman-board">
           <canvas
             ref={canvasRef}
             width={CANVAS_W}
             height={CANVAS_H}
             className="finman-canvas"
             tabIndex={0}
-            aria-label="FIN-MAN maze game"
-            onPointerDown={() => {
-              sounds.unlock();
-              canvasRef.current?.focus();
-            }}
+            aria-label="FIN-MAN maze. Swipe to turn, or use the arrow pad or keyboard."
+            onPointerDown={onCanvasPointerDown}
+            onPointerMove={onCanvasPointerMove}
+            onPointerUp={endCanvasSwipe}
+            onPointerCancel={endCanvasSwipe}
           />
 
           {overlay !== 'none' && activeQuestion && (
@@ -1254,7 +1319,7 @@ export default function FinMan() {
                 {wrongReview && (
                   <>
                     <p className="finman-rationale"><strong>Rationale:</strong> {activeQuestion.rationale}</p>
-                    <p className="finman-read-timer">Take your time — click Continue when you&apos;re ready.</p>
+                    <p className="finman-read-timer">Take your time — tap Continue when you&apos;re ready.</p>
                     <button
                       type="button"
                       className="btn btn-primary finman-continue"
@@ -1288,6 +1353,31 @@ export default function FinMan() {
               <button type="button" className="btn btn-primary" onClick={startGame}>Play Again</button>
             </div>
           )}
+          </div>
+
+          <div className="finman-pad" aria-label="Arrow pad">
+            <button type="button" className="finman-pad-btn finman-pad-up" aria-label="Move up"
+              onPointerDown={onPadPointerDown('up')}
+              onPointerUp={() => releaseDirection('up')}
+              onPointerCancel={() => releaseDirection('up')}
+              onContextMenu={(e) => e.preventDefault()}>▲</button>
+            <button type="button" className="finman-pad-btn finman-pad-left" aria-label="Move left"
+              onPointerDown={onPadPointerDown('left')}
+              onPointerUp={() => releaseDirection('left')}
+              onPointerCancel={() => releaseDirection('left')}
+              onContextMenu={(e) => e.preventDefault()}>◀</button>
+            <span className="finman-pad-hub" aria-hidden="true">🐂</span>
+            <button type="button" className="finman-pad-btn finman-pad-right" aria-label="Move right"
+              onPointerDown={onPadPointerDown('right')}
+              onPointerUp={() => releaseDirection('right')}
+              onPointerCancel={() => releaseDirection('right')}
+              onContextMenu={(e) => e.preventDefault()}>▶</button>
+            <button type="button" className="finman-pad-btn finman-pad-down" aria-label="Move down"
+              onPointerDown={onPadPointerDown('down')}
+              onPointerUp={() => releaseDirection('down')}
+              onPointerCancel={() => releaseDirection('down')}
+              onContextMenu={(e) => e.preventDefault()}>▼</button>
+          </div>
         </div>
 
         {statusMsg && !wrongReview && <p className="finman-status">{statusMsg}</p>}
@@ -1298,8 +1388,8 @@ export default function FinMan() {
         <p><strong>Ghosts:</strong> 🔴 Inflation (direct chase) · 🩷 Interest Rate (intercept) · 🩵 Liquidity (corner patrol when ahead) · 🟠 Regulatory (chaotic). A catch sends every ghost back to the pen before the question. Eating one sends that ghost straight to the pen.</p>
         <p><strong>Subjects:</strong> The bar above the maze holds each outline topic for 20 seconds, then moves to the next. Clearing a section reviews any topic you have not finished.</p>
         <p><strong>Checkpoints:</strong> {countCheckpoints()} gold gateways per section still stop you for a question. The question pool now covers that section’s outline.</p>
-        <p><strong>Controls:</strong> Arrow keys or WASD to move the Bull 🐂 · Power pellets turn every ghost blue. Touching a blue ghost sends it to the pen. · Checkpoints and SEC audits pause for questions.</p>
-        <p><strong>Sound:</strong> Classic arcade waka-waka, power pellet, ghost, and death effects — click the maze or press a key once to enable audio.</p>
+        <p><strong>Controls:</strong> On a keyboard, arrow keys or WASD. On a tablet, swipe the maze or hold the arrow pad. Power pellets turn every ghost blue. Touching a blue ghost sends it to the pen. Checkpoints and SEC audits pause for questions.</p>
+        <p><strong>Sound:</strong> Classic arcade waka-waka, power pellet, ghost, and death effects — tap the maze or press a key once to enable audio.</p>
         <button type="button" className="btn" onClick={startGame}>New Game</button>
       </div>
     </div>

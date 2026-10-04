@@ -1645,18 +1645,76 @@ body {
 .finman-stage {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
+  gap: 0.75rem;
   width: 100%;
-  overflow-x: auto;
+}
+
+.finman-board {
+  position: relative;
+  flex: 1 1 280px;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
 }
 
 .finman-canvas {
   display: block;
   width: min(100%, 950px);
+  max-width: 100%;
   height: auto;
   border-radius: 6px;
   background: #020617;
   cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.finman-pad {
+  display: none;
+  grid-template-areas:
+    ". up ."
+    "left hub right"
+    ". down .";
+  grid-template-columns: 4.25rem 4.25rem 4.25rem;
+  grid-template-rows: 4.25rem 4.25rem 4.25rem;
+  gap: 0.35rem;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
+.finman-pad-btn {
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 14px;
+  border: 2px solid #1e3a8a;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 1.45rem;
+  line-height: 1;
+  touch-action: none;
+  cursor: pointer;
+}
+
+.finman-pad-btn:active {
+  background: #1d4ed8;
+}
+
+.finman-pad-up { grid-area: up; }
+.finman-pad-left { grid-area: left; }
+.finman-pad-right { grid-area: right; }
+.finman-pad-down { grid-area: down; }
+
+.finman-pad-hub {
+  grid-area: hub;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
 }
 
 .finman-canvas:focus {
@@ -1797,6 +1855,60 @@ body {
 
 .finman-legend .btn {
   margin-top: 0.5rem;
+}
+
+@media (pointer: coarse), (max-height: 820px) {
+  .finman-pad {
+    display: grid;
+  }
+
+  .finman-container {
+    padding: 0.65rem;
+  }
+
+  .finman-canvas {
+    width: min(100%, 950px, calc((100dvh - 15rem) * 950 / 1050));
+    aspect-ratio: 950 / 1050;
+  }
+
+  .finman-flashcard-banner {
+    margin-bottom: 0.45rem;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .finman-flashcard-banner p {
+    max-height: 2.9em;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .finman-overlay,
+  .finman-end-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    border-radius: 0;
+    padding:
+      max(0.75rem, env(safe-area-inset-top))
+      max(0.75rem, env(safe-area-inset-right))
+      max(0.75rem, env(safe-area-inset-bottom))
+      max(0.75rem, env(safe-area-inset-left));
+  }
+
+  .finman-modal {
+    max-height: min(100%, 100dvh - 1.5rem);
+    max-width: 640px;
+  }
+
+  .finman-option,
+  .finman-page .btn {
+    min-height: 44px;
+  }
+
+  .finman-option {
+    font-size: 1rem;
+    padding: 0.85rem 1rem;
+  }
 }
 
 /* ─── SIE Defender ─────────────────────────────────────────────── */
