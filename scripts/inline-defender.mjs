@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { dirname, join } from 'path';
 
 const root = 'compliance-defender';
 const jsPath = join(root, 'dist/compliance-defender.js');
@@ -19,6 +19,8 @@ html = html.replace(
   `<script>\n${js}\n</script>`,
 );
 
+mkdirSync(dirname(outHtml), { recursive: true });
+mkdirSync(dirname(outJs), { recursive: true });
 writeFileSync(outHtml, html);
 writeFileSync(outJs, js);
 console.log('Inlined Compliance Defender BUILD into public/compliance-defender/index.html');
