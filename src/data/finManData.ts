@@ -17,6 +17,9 @@ export interface FinManQuestion {
   opts: string[];
   correct: number;
   rationale: string;
+  /** Short study card shown with the question. Matches this item, not the rotating outline brief. */
+  studyNote?: string;
+  topicTitle?: string;
 }
 
 export interface FinManLevel {

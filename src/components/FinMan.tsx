@@ -8,6 +8,7 @@ import {
   type FinManSectionId,
   type FinManTopic,
 } from '../data/finManData';
+import { drawFinManQuestion, resetMazeQuestions, sectionPoolSize } from '../lib/finManDeck';
 import { getFinManSounds } from '../lib/finManSounds';
 
 /* ─── Maze & layout ─────────────────────────────────────────────── */
@@ -370,9 +371,9 @@ function countCheckpoints(): number {
   return n;
 }
 
-function pickSectionQuestion(section: FinManSectionId, seed: number): FinManQuestion {
-  const questions = FIN_MAN_DATA.levels[section].questions;
-  return questions[Math.abs(seed) % questions.length];
+function teachLine(rationale: string): string {
+  const sentence = rationale.split(/(?<=\.)\s/)[0] ?? rationale;
+  return sentence.length > 180 ? `${sentence.slice(0, 177)}...` : sentence;
 }
 
 function buildTiles(): TileCell[][] {
@@ -827,7 +828,7 @@ export default function FinMan() {
         setGameMsg('SEC Audit passed — life saved! Risks stay in the pen.');
       } else {
         s.score += CHECKPOINT_SCORE;
-        setGameMsg('Checkpoint cleared!');
+        setGameMsg(`Checkpoint cleared. ${teachLine(q.rationale)}`);
       }
       s.phase = 'playing';
       s.running = true;
@@ -849,6 +850,7 @@ export default function FinMan() {
       s.section = FIN_MAN_SECTIONS[idx + 1];
       s.tiles = buildTiles();
       s.visitedCheckpoints = new Set();
+      resetMazeQuestions();
       const start = tileCenter(9, 15);
       s.player = { x: start.x, y: start.y, dir: 'left', nextDir: 'left', mouth: 0 };
       s.ghosts = makeGhosts(s.gameTime);
@@ -912,6 +914,7 @@ export default function FinMan() {
 
   const startGame = useCallback(() => {
     wrongLoseLifeRef.current = false;
+    resetMazeQuestions();
     const s = freshState('1');
     stateRef.current = s;
     overlayRef.current = 'none';
@@ -1081,13 +1084,12 @@ export default function FinMan() {
           const cpKey = `${col},${row}`;
           if (!s.visitedCheckpoints.has(cpKey)) {
             s.visitedCheckpoints.add(cpKey);
-            const questions = FIN_MAN_DATA.levels[s.section].questions;
-            const q = questions[(s.visitedCheckpoints.size - 1) % questions.length];
-            const topic = topicById(s.section, q.topicId);
+            const drawn = drawFinManQuestion(s.section);
+            const topicLabel = drawn.question.topicTitle ? ` — ${drawn.question.topicTitle}` : '';
             pauseForQuestion(
               'checkpoint',
-              q,
-              `Checkpoint ${s.visitedCheckpoints.size}/${countCheckpoints()}${topic ? ` — ${topic.title}` : ''}`,
+              drawn.question,
+              `Checkpoint ${s.visitedCheckpoints.size}/${countCheckpoints()}${topicLabel} · ${drawn.position} of ${drawn.total}`,
             );
           }
         }
@@ -1154,9 +1156,13 @@ export default function FinMan() {
             resetGhostsToPen(s.ghosts, s.gameTime, AUDIT_JAIL_BASE_MS, AUDIT_JAIL_STAGGER_MS);
             pendingSecAuditRef.current = true;
             s.running = false;
-            const q = pickSectionQuestion(s.section, s.score + s.lives * 17);
-            const topic = topicById(s.section, q.topicId);
-            pauseForQuestion('sec_audit', q, `SEC Audit — Save Your Life!${topic ? ` — ${topic.title}` : ''}`);
+            const drawn = drawFinManQuestion(s.section);
+            const topicLabel = drawn.question.topicTitle ? ` — ${drawn.question.topicTitle}` : '';
+            pauseForQuestion(
+              'sec_audit',
+              drawn.question,
+              `SEC Audit — Save Your Life!${topicLabel} · ${drawn.position} of ${drawn.total}`,
+            );
             break;
           }
         }
@@ -1223,7 +1229,7 @@ export default function FinMan() {
   return (
     <div className="page finman-page">
       <h1>FIN-MAN</h1>
-      <p className="subtitle">Same maze and ghosts. Every SIE subject gets a 20-second brief, then a checkpoint question.</p>
+      <p className="subtitle">Same maze and ghosts. Subject cards stay up for 20 seconds. Each checkpoint is a new question from the full practice bank.</p>
 
       <div className={`finman-container ${wrongBorder ? 'finman-wrong' : ''}`}>
         <div className="finman-hud">
@@ -1267,11 +1273,18 @@ export default function FinMan() {
             <div className="finman-overlay" role="dialog" aria-modal="true">
               <div className="finman-modal card">
                 <h2>{overlayTitle}</h2>
-                {topicById(stateRef.current.section, activeQuestion.topicId) && (
-                  <p className="finman-brief">
-                    {topicById(stateRef.current.section, activeQuestion.topicId)?.brief}
-                  </p>
-                )}
+                {(() => {
+                  const matched = topicById(stateRef.current.section, activeQuestion.topicId);
+                  const cardTopic = activeQuestion.topicTitle || matched?.title;
+                  const cardNote = activeQuestion.studyNote || matched?.brief;
+                  if (!cardTopic && !cardNote) return null;
+                  return (
+                    <p className="finman-brief">
+                      {cardTopic && <strong>{cardTopic}. </strong>}
+                      {cardNote}
+                    </p>
+                  );
+                })()}
                 <p className="finman-question">{activeQuestion.text}</p>
                 <div className="finman-options">
                   {activeQuestion.opts.map((opt, i) => {
@@ -1340,7 +1353,7 @@ export default function FinMan() {
       <div className="card finman-legend">
         <p><strong>Ghosts:</strong> 🔴 Inflation (direct chase) · 🩷 Interest Rate (intercept) · 🩵 Liquidity (corner patrol when ahead) · 🟠 Regulatory (chaotic). A catch sends every ghost back to the pen before the question. Eating one sends that ghost straight to the pen.</p>
         <p><strong>Subjects:</strong> The bar above the maze holds each outline topic for 20 seconds, then moves to the next. Clearing a section reviews any topic you have not finished.</p>
-        <p><strong>Checkpoints:</strong> {countCheckpoints()} gold gateways per section still stop you for a question. The question pool now covers that section’s outline.</p>
+        <p><strong>Checkpoints:</strong> {countCheckpoints()} gold gateways per section. Each one deals a different question from that section’s practice bank ({sectionPoolSize('1')} + {sectionPoolSize('2')} + {sectionPoolSize('3')} + {sectionPoolSize('4')} items, {sectionPoolSize('1') + sectionPoolSize('2') + sectionPoolSize('3') + sectionPoolSize('4')} total). The 75-question practice exam is drawn from this same bank. A question stays out until the rest of its section has been asked. The subject cards above the maze still teach each outline topic.</p>
         <p><strong>Controls:</strong> On a keyboard, arrow keys or WASD. On a tablet, swipe the maze. Power pellets turn every ghost blue. Touching a blue ghost sends it to the pen. Checkpoints and SEC audits pause for questions.</p>
         <p><strong>Sound:</strong> Classic arcade waka-waka, power pellet, ghost, and death effects — tap the maze or press a key once to enable audio.</p>
         <button type="button" className="btn" onClick={startGame}>New Game</button>
