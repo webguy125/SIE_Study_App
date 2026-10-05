@@ -6,10 +6,15 @@ import {
   topicById,
   type FinManQuestion,
   type FinManSectionId,
-  type FinManTopic,
 } from '../data/finManData';
 import { drawFinManQuestion, resetMazeQuestions, sectionPoolSize } from '../lib/finManDeck';
 import { getFinManSounds } from '../lib/finManSounds';
+import {
+  lessonForQuestion,
+  notesDocument,
+  retentionQuiz,
+  type StudyLesson,
+} from '../lib/finManStudy';
 
 /* ─── Maze & layout ─────────────────────────────────────────────── */
 const TILE = 50;
@@ -702,11 +707,11 @@ export default function FinMan() {
   const bannerFlushRef = useRef(0);
   const topicIndexRef = useRef(0);
   const topicClockRef = useRef(0);
-  const seenTopicsRef = useRef<Set<string>>(new Set());
-  const reviewQueueRef = useRef<FinManTopic[]>([]);
   const reviewActiveRef = useRef(false);
-  const reviewStepLock = useRef(false);
   const onMazeClearedRef = useRef<() => void>(() => {});
+  const answeredIdsRef = useRef<string[]>([]);
+  const notesBodyRef = useRef<HTMLDivElement>(null);
+  const notesPopRef = useRef<Window | null>(null);
   const overlayRef = useRef<OverlayMode>('none');
   const pendingSecAuditRef = useRef(false);
   const wrongLoseLifeRef = useRef(false);
@@ -721,10 +726,18 @@ export default function FinMan() {
     sectionName: FIN_MAN_DATA.levels['1'].name,
   });
   const [topicBanner, setTopicBanner] = useState<TopicBanner>(() => bannerFor('1', 0, 0));
-  const [reviewTopic, setReviewTopic] = useState<FinManTopic | null>(null);
-  const [reviewLeft, setReviewLeft] = useState(0);
-  const [reviewSeconds, setReviewSeconds] = useState(20);
   const [overlay, setOverlay] = useState<OverlayMode>('none');
+  const [lessons, setLessons] = useState<StudyLesson[]>([]);
+  const [notesWidth, setNotesWidth] = useState(360);
+  const [notesOpen, setNotesOpen] = useState(() => (
+    window.matchMedia('(min-width: 1401px) and (hover: hover) and (pointer: fine)').matches
+  ));
+  const [notesPopped, setNotesPopped] = useState(false);
+  const [retention, setRetention] = useState<FinManQuestion[] | null>(null);
+  const [retentionIndex, setRetentionIndex] = useState(0);
+  const [retentionPick, setRetentionPick] = useState<number | null>(null);
+  const [retentionScore, setRetentionScore] = useState(0);
+  const [retentionSummary, setRetentionSummary] = useState(false);
   const [activeQuestion, setActiveQuestion] = useState<FinManQuestion | null>(null);
   const [overlayTitle, setOverlayTitle] = useState('');
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -816,6 +829,15 @@ export default function FinMan() {
     sounds.playWrong();
   }, [sounds]);
 
+  const addLesson = useCallback((question: FinManQuestion, correct: boolean, source: 'maze' | 'retention') => {
+    if (source === 'maze' && !answeredIdsRef.current.includes(question.id)) {
+      answeredIdsRef.current.push(question.id);
+    }
+    const lesson = lessonForQuestion(question.id, correct, source);
+    if (!lesson) return;
+    setLessons((prev) => (prev.some((item) => item.key === lesson.key) ? prev : [...prev, lesson]));
+  }, []);
+
   const handleAnswer = useCallback((index: number) => {
     const s = stateRef.current;
     const q = activeQuestion;
@@ -823,6 +845,7 @@ export default function FinMan() {
 
     if (index === q.correct) {
       sounds.playCorrect();
+      addLesson(q, true, 'maze');
       if (overlayRef.current === 'sec_audit') {
         resetGhostsToPen(s.ghosts, s.gameTime, AUDIT_JAIL_BASE_MS, AUDIT_JAIL_STAGGER_MS);
         setGameMsg('SEC Audit passed — life saved! Risks stay in the pen.');
@@ -841,8 +864,9 @@ export default function FinMan() {
       return;
     }
 
+    addLesson(q, false, 'maze');
     startWrongReview(q, index, overlayRef.current === 'sec_audit');
-  }, [activeQuestion, wrongReview, startWrongReview, syncHud, sounds]);
+  }, [activeQuestion, wrongReview, startWrongReview, syncHud, sounds, addLesson]);
 
   const advanceSection = useCallback((s: GameState) => {
     const idx = FIN_MAN_SECTIONS.indexOf(s.section);
@@ -867,7 +891,6 @@ export default function FinMan() {
   const finishSection = useCallback(() => {
     const s = stateRef.current;
     advanceSection(s);
-    seenTopicsRef.current = new Set();
     topicIndexRef.current = 0;
     topicClockRef.current = 0;
     if (s.phase !== 'complete') {
@@ -877,40 +900,14 @@ export default function FinMan() {
     }
   }, [advanceSection]);
 
-  const advanceReview = useCallback(() => {
-    if (reviewStepLock.current) return;
-    reviewStepLock.current = true;
-    const current = reviewQueueRef.current[0];
-    if (current) seenTopicsRef.current.add(current.id);
-    reviewQueueRef.current = reviewQueueRef.current.slice(1);
-    const next = reviewQueueRef.current[0];
-    if (next) {
-      setReviewTopic(next);
-      setReviewLeft(reviewQueueRef.current.length);
-      setReviewSeconds(20);
-      reviewStepLock.current = false;
-      return;
-    }
+  const completeRetention = useCallback(() => {
     reviewActiveRef.current = false;
-    setReviewTopic(null);
-    setReviewLeft(0);
+    setRetention(null);
+    setRetentionSummary(false);
+    setRetentionPick(null);
+    answeredIdsRef.current = [];
     finishSection();
-    reviewStepLock.current = false;
   }, [finishSection]);
-
-  useEffect(() => {
-    if (!reviewTopic) return;
-    const started = performance.now();
-    const tick = window.setInterval(() => {
-      const left = Math.max(0, 20 - Math.floor((performance.now() - started) / 1000));
-      setReviewSeconds(left);
-    }, 250);
-    const done = window.setTimeout(() => advanceReview(), TOPIC_READ_MS);
-    return () => {
-      window.clearInterval(tick);
-      window.clearTimeout(done);
-    };
-  }, [reviewTopic, advanceReview]);
 
   const startGame = useCallback(() => {
     wrongLoseLifeRef.current = false;
@@ -920,13 +917,12 @@ export default function FinMan() {
     overlayRef.current = 'none';
     pendingSecAuditRef.current = false;
     reviewActiveRef.current = false;
-    reviewQueueRef.current = [];
-    reviewStepLock.current = false;
-    seenTopicsRef.current = new Set();
+    answeredIdsRef.current = [];
     topicIndexRef.current = 0;
     topicClockRef.current = 0;
-    setReviewTopic(null);
-    setReviewLeft(0);
+    setRetention(null);
+    setRetentionSummary(false);
+    setRetentionPick(null);
     setTopicBanner(bannerFor('1', 0, 0));
     setOverlay('none');
     setActiveQuestion(null);
@@ -945,21 +941,21 @@ export default function FinMan() {
   onMazeClearedRef.current = () => {
     const s = stateRef.current;
     if (reviewActiveRef.current || overlayRef.current !== 'none') return;
-    const topics = FIN_MAN_DATA.levels[s.section].topics;
-    const unseen = topics.filter((topic) => !seenTopicsRef.current.has(topic.id));
-    if (unseen.length > 0) {
-      s.running = false;
-      s.phase = 'paused';
-      reviewActiveRef.current = true;
-      reviewQueueRef.current = unseen;
-      reviewStepLock.current = false;
-      setReviewLeft(unseen.length);
-      setReviewSeconds(20);
-      setReviewTopic(unseen[0]);
-      setGameMsg(`Section clear. ${unseen.length} subject${unseen.length === 1 ? '' : 's'} still to cover — 20 seconds each.`);
+    s.running = false;
+    s.phase = 'paused';
+    const quiz = retentionQuiz(s.section, answeredIdsRef.current, 5);
+    if (quiz.length === 0) {
+      answeredIdsRef.current = [];
+      finishSection();
       return;
     }
-    finishSection();
+    reviewActiveRef.current = true;
+    setRetention(quiz);
+    setRetentionIndex(0);
+    setRetentionPick(null);
+    setRetentionScore(0);
+    setRetentionSummary(false);
+    setGameMsg('Section clear. A short retention check is next, using different questions on the same ideas.');
   };
 
   useEffect(() => {
@@ -997,6 +993,32 @@ export default function FinMan() {
   }, [sounds]);
 
   useEffect(() => {
+    const body = notesBodyRef.current;
+    if (!body) return;
+    body.scrollTop = body.scrollHeight;
+  }, [lessons]);
+
+  useEffect(() => {
+    const popup = notesPopRef.current;
+    if (!popup || popup.closed) return;
+    popup.document.open();
+    popup.document.write(notesDocument(lessons));
+    popup.document.close();
+  }, [lessons]);
+
+  useEffect(() => {
+    if (!notesPopped) return;
+    const watch = window.setInterval(() => {
+      if (!notesPopRef.current || notesPopRef.current.closed) {
+        notesPopRef.current = null;
+        setNotesPopped(false);
+        setNotesOpen(true);
+      }
+    }, 400);
+    return () => window.clearInterval(watch);
+  }, [notesPopped]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -1017,8 +1039,6 @@ export default function FinMan() {
         const topics = FIN_MAN_DATA.levels[s.section].topics;
         topicClockRef.current += elapsed;
         if (topicClockRef.current >= TOPIC_READ_MS) {
-          const shown = topics[topicIndexRef.current % topics.length];
-          seenTopicsRef.current.add(shown.id);
           topicClockRef.current = 0;
           topicIndexRef.current = (topicIndexRef.current + 1) % topics.length;
         }
@@ -1226,8 +1246,69 @@ export default function FinMan() {
     if (swipeOriginRef.current?.pointerId === e.pointerId) swipeOriginRef.current = null;
   };
 
+  const openNotesWindow = () => {
+    const popup = window.open('', 'finman-learned', 'popup=yes,width=560,height=780,resizable=yes');
+    if (!popup) {
+      setGameMsg('Allow pop-up windows to break the notes out of the game.');
+      return;
+    }
+    notesPopRef.current = popup;
+    popup.document.open();
+    popup.document.write(notesDocument(lessons));
+    popup.document.close();
+    setNotesPopped(true);
+    setNotesOpen(false);
+  };
+
+  const dockNotes = () => {
+    if (notesPopRef.current && !notesPopRef.current.closed) notesPopRef.current.close();
+    notesPopRef.current = null;
+    setNotesPopped(false);
+    setNotesOpen(true);
+  };
+
+  const startNotesResize = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const panel = event.currentTarget.parentElement;
+    if (!panel) return;
+    const right = panel.getBoundingClientRect().right;
+    const move = (ev: PointerEvent) => {
+      const next = Math.min(720, Math.max(280, right - ev.clientX));
+      setNotesWidth(next);
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  const answerRetention = (index: number) => {
+    if (!retention || retentionPick !== null || retentionSummary) return;
+    const question = retention[retentionIndex];
+    const correct = index === question.correct;
+    setRetentionPick(index);
+    if (correct) setRetentionScore((score) => score + 1);
+    addLesson(question, correct, 'retention');
+  };
+
+  const nextRetention = () => {
+    if (!retention) return;
+    if (retentionIndex + 1 >= retention.length) {
+      setRetentionSummary(true);
+      return;
+    }
+    setRetentionIndex((index) => index + 1);
+    setRetentionPick(null);
+  };
+
+  const retentionQuestion = retention && !retentionSummary ? retention[retentionIndex] : null;
+
   return (
-    <div className="page finman-page">
+    <div className={`page finman-page ${notesOpen && !notesPopped ? '' : 'notes-closed'} ${notesPopped ? 'notes-popped' : ''}`}>
+      <div className="finman-workspace">
+      <div className="finman-play">
       <h1>FIN-MAN</h1>
       <p className="subtitle">Same maze and ghosts. Subject cards stay up for 20 seconds. Each checkpoint is a new question from the full practice bank.</p>
 
@@ -1323,21 +1404,62 @@ export default function FinMan() {
             </div>
           )}
 
-          {reviewTopic && overlay === 'none' && (
+          {retention && overlay === 'none' && (
             <div className="finman-overlay" role="dialog" aria-modal="true">
               <div className="finman-modal card">
-                <h2>Cover the rest of this section</h2>
-                <p className="finman-read-timer">{reviewSeconds}s · {reviewLeft} subject{reviewLeft === 1 ? '' : 's'} left</p>
-                <p className="finman-topic-title">{reviewTopic.title}</p>
-                <p className="finman-brief">{reviewTopic.brief}</p>
-                <button type="button" className="btn btn-primary finman-continue" onClick={advanceReview}>
-                  Next subject
-                </button>
+                {retentionSummary ? (
+                  <>
+                    <h2>Retention check</h2>
+                    <p className="finman-question">
+                      You kept {retentionScore} of {retention.length}. The write-ups are in What you learned.
+                    </p>
+                    <button type="button" className="btn btn-primary finman-continue" onClick={completeRetention}>
+                      Continue
+                    </button>
+                  </>
+                ) : retentionQuestion && (
+                  <>
+                    <h2>Retention check · {retentionIndex + 1} of {retention.length}</h2>
+                    <p className="finman-brief">
+                      <strong>{retentionQuestion.topicTitle}. </strong>
+                      A new question on an idea you just practiced.
+                    </p>
+                    <p className="finman-question">{retentionQuestion.text}</p>
+                    <div className="finman-options">
+                      {retentionQuestion.opts.map((opt, i) => {
+                        let cls = 'finman-option';
+                        if (retentionPick !== null) {
+                          if (i === retentionQuestion.correct) cls += ' finman-option-correct';
+                          else if (i === retentionPick) cls += ' finman-option-wrong';
+                        }
+                        return (
+                          <button
+                            key={`${retentionQuestion.id}-${i}`}
+                            type="button"
+                            className={cls}
+                            disabled={retentionPick !== null}
+                            onClick={() => answerRetention(i)}
+                          >
+                            <span className="finman-opt-key">{String.fromCharCode(65 + i)}.</span> {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {retentionPick !== null && (
+                      <>
+                        <p className="finman-rationale"><strong>Rationale:</strong> {retentionQuestion.rationale}</p>
+                        <button type="button" className="btn btn-primary finman-continue" onClick={nextRetention}>
+                          {retentionIndex + 1 >= retention.length ? 'See result' : 'Next'}
+                        </button>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           )}
 
-          {endPhase !== 'none' && overlay === 'none' && !reviewTopic && (
+          {endPhase !== 'none' && overlay === 'none' && !retention && (
             <div className="finman-end-overlay">
               <p>{gameMsg}</p>
               <button type="button" className="btn btn-primary" onClick={startGame}>Play Again</button>
@@ -1352,12 +1474,57 @@ export default function FinMan() {
 
       <div className="card finman-legend">
         <p><strong>Ghosts:</strong> 🔴 Inflation (direct chase) · 🩷 Interest Rate (intercept) · 🩵 Liquidity (corner patrol when ahead) · 🟠 Regulatory (chaotic). A catch sends every ghost back to the pen before the question. Eating one sends that ghost straight to the pen.</p>
-        <p><strong>Subjects:</strong> The bar above the maze holds each outline topic for 20 seconds, then moves to the next. Clearing a section reviews any topic you have not finished.</p>
+        <p><strong>Subjects:</strong> The bar above the maze holds each outline topic for 20 seconds, then moves to the next. Clearing a section opens a short retention check made of different questions on the ideas you just answered. What you learned, on the right, writes those items up like a study chapter. Drag its edge to resize it, or open it in its own window.</p>
         <p><strong>Checkpoints:</strong> {countCheckpoints()} gold gateways per section. Each one deals a different question from that section’s practice bank ({sectionPoolSize('1')} + {sectionPoolSize('2')} + {sectionPoolSize('3')} + {sectionPoolSize('4')} items, {sectionPoolSize('1') + sectionPoolSize('2') + sectionPoolSize('3') + sectionPoolSize('4')} total). The 75-question practice exam is drawn from this same bank. A question stays out until the rest of its section has been asked. The subject cards above the maze still teach each outline topic.</p>
         <p><strong>Controls:</strong> On a keyboard, arrow keys or WASD. On a tablet, swipe the maze. Power pellets turn every ghost blue. Touching a blue ghost sends it to the pen. Checkpoints and SEC audits pause for questions.</p>
         <p><strong>Sound:</strong> Classic arcade waka-waka, power pellet, ghost, and death effects — tap the maze or press a key once to enable audio.</p>
         <button type="button" className="btn" onClick={startGame}>New Game</button>
       </div>
+      </div>
+
+      {notesPopped ? (
+        <aside className="finman-notes-dock">
+          <p>What you learned is open in its own window.</p>
+          <button type="button" className="btn btn-sm" onClick={() => notesPopRef.current?.focus()}>Show window</button>
+          <button type="button" className="btn btn-sm" onClick={dockNotes}>Dock</button>
+        </aside>
+      ) : notesOpen && (
+        <aside className="finman-learned is-open" style={{ width: notesWidth }} aria-label="What you learned">
+          <div
+            className="finman-learned-resize"
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Resize notes"
+            onPointerDown={startNotesResize}
+          />
+          <header className="finman-learned-head">
+            <h2>What you learned</h2>
+            <div className="finman-learned-actions">
+              <button type="button" className="btn btn-sm" onClick={openNotesWindow}>Open in a window</button>
+              <button type="button" className="btn btn-sm" onClick={() => setNotesOpen(false)}>Hide</button>
+            </div>
+          </header>
+          <div className="finman-learned-body" ref={notesBodyRef}>
+            {lessons.length === 0 ? (
+              <p className="finman-learned-empty">
+                Answer a checkpoint or an SEC audit. Each one is written up here, in plain study-book language, and kept for this session.
+              </p>
+            ) : lessons.map((lesson) => (
+              <article key={lesson.key} className="finman-lesson">
+                <p className="finman-lesson-kicker">{lesson.kicker}</p>
+                <h3>{lesson.heading}</h3>
+                {lesson.paragraphs.map((paragraph, index) => (
+                  <p key={`${lesson.key}-${index}`}>{paragraph}</p>
+                ))}
+              </article>
+            ))}
+          </div>
+        </aside>
+      )}
+      </div>
+      <button type="button" className="finman-notes-tab" onClick={dockNotes}>
+        What you learned
+      </button>
     </div>
   );
 }
