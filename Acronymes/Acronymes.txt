@@ -1,0 +1,339 @@
+Regulators and laws
+	• SEC — Securities and Exchange Commission. Federal regulator; enforces the 1933 and 1934 Acts.
+	• FINRA — Financial Industry Regulatory Authority. SRO for broker-dealers and registered reps.
+	• SRO — Self-regulatory organization. Writes and enforces member rules under SEC oversight.
+	• MSRB — Municipal Securities Rulemaking Board. Writes muni rules; does not enforce them.
+	• NASAA — North American Securities Administrators Association. State securities regulators; Series 63/65/66.
+	• FRB — Federal Reserve Board. Monetary policy and Regulation T margin.
+	• FDIC — Federal Deposit Insurance Corporation. Insures bank deposits, not securities.
+	• SIPC — Securities Investor Protection Corporation. Up to $500,000 per customer if a BD fails, including $250,000 cash.
+	• FinCEN — Financial Crimes Enforcement Network. Receives CTRs and SARs.
+	• OFAC — Office of Foreign Assets Control. Sanctions; SDN list.
+	• IRS — Internal Revenue Service.
+	• CFTC — Commodity Futures Trading Commission. Futures and commodities.
+	• ERISA — Employee Retirement Income Security Act of 1974. Qualified retirement plans.
+	• SIPA — Securities Investor Protection Act. Created SIPC.
+	• BSA — Bank Secrecy Act. AML statute.
+	• USA PATRIOT Act — CIP and AML requirements for BDs.
+	• SOX — Sarbanes-Oxley Act of 2002.
+	• JOBS Act — Jumpstart Our Business Startups Act. EGC status, crowdfunding, Reg A+.
+	• Reg BI — Regulation Best Interest. Retail recommendations must be in the customer’s best interest.
+	• Reg T — Federal Reserve margin rule. 50% initial margin on most equity purchases.
+	• Reg D — Private-offering exemption (506(b) and 506(c)).
+	• Reg A / A+ — Small-issue exemption.
+	• Reg S — Offshore offering exemption.
+	• Reg FD — Fair Disclosure. No selective disclosure of material info.
+	• Rule 144 — Resale of restricted and control stock.
+	• Rule 144A — Resale to QIBs.
+	• Rule 147 — Intrastate offering.
+People, firms, registration
+	• BD — Broker-dealer. Agent for customers, principal for its own account.
+	• RR — Registered representative.
+	• AP — Associated person.
+	• OSJ — Office of supervisory jurisdiction.
+	• IA / RIA — Investment adviser / registered investment adviser.
+	• IAR — Investment adviser representative.
+	• QIB — Qualified institutional buyer. Rule 144A.
+	• FINOP — Financial and operations principal. Series 27.
+	• CCO — Chief compliance officer.
+	• CRD — Central Registration Depository. Broker registration database; BrokerCheck pulls from it.
+	• Form U4 — Registration application.
+	• Form U5 — Termination notice.
+	• Form BD — Broker-dealer registration with the SEC.
+	• Form CRS — Customer relationship summary. Required under Reg BI.
+	• CE — Continuing education. Regulatory Element and Firm Element.
+	• OBA — Outside business activity. Must be disclosed.
+	• PST — Private securities transaction. Selling away if not approved.
+Offerings and markets
+	• IPO — Initial public offering.
+	• SPO — Subsequent / follow-on public offering.
+	• POP — Public offering price.
+	• WKSI — Well-known seasoned issuer.
+	• EGC — Emerging growth company.
+	• SPAC — Special purpose acquisition company.
+	• PIPE — Private investment in public equity.
+	• IOI — Indication of interest. Nonbinding.
+	• ATM — At-the-market offering.
+	• OTC — Over-the-counter.
+	• ATS — Alternative trading system.
+	• ECN — Electronic communication network.
+	• NYSE — New York Stock Exchange.
+	• Nasdaq — Electronic exchange.
+	• Cboe — Options exchange (formerly CBOE).
+	• NMS — National Market System.
+	• NBBO — National best bid and offer.
+	• SIP — Securities information processor.
+	• EDGAR — SEC electronic filing system.
+	• EMMA — Electronic Municipal Market Access. MSRB disclosure site.
+	• TRACE — Trade Reporting and Compliance Engine. Corporate and agency bond trades.
+	• RTRS — Real-Time Transaction Reporting System. Muni trades.
+	• DTC / DTCC — Depository Trust Company / Depository Trust & Clearing Corporation.
+	• NSCC — National Securities Clearing Corporation.
+	• OCC — Options Clearing Corporation.
+	• ACATS — Automated Customer Account Transfer Service.
+Products
+	• ETF — Exchange-traded fund.
+	• ETN — Exchange-traded note. Unsecured debt of the issuer.
+	• UIT — Unit investment trust.
+	• NAV — Net asset value.
+	• CDSC — Contingent deferred sales charge. Back-end load.
+	• LOI — Letter of intent. Breakpoint commitment.
+	• ROA — Rights of accumulation. Breakpoint based on existing holdings.
+	• REIT — Real estate investment trust.
+	• DPP — Direct participation program. Pass-through tax.
+	• LP / GP — Limited partner / general partner.
+	• ADR — American depositary receipt. Foreign stock trading in the U.S.
+	• GDR — Global depositary receipt.
+	• IPO — already listed.
+	• T-bill / T-note / T-bond — Treasury bill (≤1 year), note (2–10), bond (20–30).
+	• TIPS — Treasury Inflation-Protected Securities.
+	• STRIPS — Separate Trading of Registered Interest and Principal of Securities. Zero-coupon Treasuries.
+	• GNMA — Government National Mortgage Association (Ginnie Mae). Full U.S. government backing.
+	• FNMA — Federal National Mortgage Association (Fannie Mae). GSE.
+	• FHLMC — Federal Home Loan Mortgage Corporation (Freddie Mac). GSE.
+	• GSE — Government-sponsored enterprise.
+	• MBS — Mortgage-backed security.
+	• CMO — Collateralized mortgage obligation.
+	• ABS — Asset-backed security.
+	• CDO — Collateralized debt obligation.
+	• REMIC — Real estate mortgage investment conduit.
+	• GO — General obligation bond. Backed by taxing power.
+	• BAN / RAN / TAN / TRAN — Bond / revenue / tax / tax-and-revenue anticipation notes.
+	• OID — Original issue discount.
+	• CD — Certificate of deposit.
+	• YTM — Yield to maturity.
+	• YTC — Yield to call.
+	• YTW — Yield to worst.
+	• CY — Current yield.
+	• TEY — Tax-equivalent yield.
+	• LEAPS — Long-term equity anticipation securities. Options up to about 39 months.
+	• ITM / ATM / OTM — In / at / out of the money.
+	• ODD — Options disclosure document. Must be delivered before options trading.
+Accounts and orders
+	• IRA — Individual retirement account.
+	• SEP — Simplified employee pension.
+	• SIMPLE — Savings Incentive Match Plan for Employees.
+	• RMD — Required minimum distribution.
+	• 401(k) / 403(b) / 457 — Employer plans.
+	• UGMA / UTMA — Uniform Gifts / Transfers to Minors Act. Custodial accounts.
+	• ESA — Coverdell Education Savings Account.
+	• 529 — Qualified tuition program.
+	• ABLE — Achieving a Better Life Experience account.
+	• JTWROS — Joint tenants with right of survivorship.
+	• TIC — Tenants in common.
+	• TBE — Tenants by the entirety.
+	• TOD — Transfer on death.
+	• POA — Power of attorney.
+	• DVP / RVP — Delivery versus payment / receive versus payment.
+	• SMA — Special memorandum account. Excess margin equity.
+	• GTC — Good-til-canceled.
+	• AON — All-or-none.
+	• FOK — Fill-or-kill.
+	• IOC — Immediate-or-cancel.
+	• MOC / MOO — Market-on-close / market-on-open.
+	• LOC — Limit-on-close.
+	• DNR — Do not reduce. Stop/limit not adjusted for a dividend.
+AML and conduct
+	• AML — Anti-money laundering.
+	• CIP — Customer identification program.
+	• CDD — Customer due diligence.
+	• KYC — Know your customer.
+	• CTR — Currency Transaction Report. Cash over $10,000.
+	• SAR — Suspicious Activity Report. Generally $5,000+, filed with FinCEN, confidential.
+	• SDN — Specially Designated Nationals list. OFAC.
+	• PEP — Politically exposed person.
+	• MNPI — Material nonpublic information. Basis of insider trading.
+	• WSP — Written supervisory procedures.
+	• BCP — Business continuity plan.
+Economics and analysis
+	• GDP — Gross domestic product.
+	• CPI — Consumer Price Index.
+	• PPI — Producer Price Index.
+	• PCE — Personal consumption expenditures. Fed’s preferred inflation gauge.
+	• FOMC — Federal Open Market Committee.
+	• EPS — Earnings per share.
+	• P/E — Price-to-earnings.
+	• ROI — Return on investment.
+	• AUM — Assets under management.
+	• CAPM — Capital asset pricing model.
+	• DCF — Discounted cash flow.
+	• FIFO / LIFO — First-in first-out / last-in first-out.
+	• GAAP — Generally accepted accounting principles.
+	• DJIA — Dow Jones Industrial Average.
+	• SPX — S&P 500 index.
+	• VIX — Cboe Volatility Index.
+
+	• AWC — acceptance, waiver, and consent. FINRA settlement without admitting or denying the findings.
+	• AUV — accumulation unit value. Variable annuity separate-account unit during the pay-in phase.
+	• AMT — alternative minimum tax. Can hit private-activity municipal bonds.
+	• APY — annual percentage yield.
+	• AIR — assumed interest rate / assumed investment rate. Variable annuity illustration rate.
+	• ADTV — average daily trading volume.
+	• COD — collect on delivery.
+	• CAGR — compound annual growth rate.
+	• CNS — continuous net settlement. NSCC netting.
+	• DMA — direct market access.
+	• DDM — dividend discount model.
+	• DPS — dividend per share.
+	• DBA — doing business as.
+	• DCA — dollar-cost averaging.
+	• DK — don’t know. Uncompared trade.
+	• EED — expiring exercise declaration. Options.
+	• FFI — foreign financial institution.
+	• GMIB / GMWB / GMAB — guaranteed minimum income / withdrawal / accumulation benefit. Annuity riders.
+	• IOI — already covered; skip.
+	• IRC — Internal Revenue Code.
+	• LBO — leveraged buyout.
+	• LIHTC — Low Income Housing Tax Credit.
+	• MPID — market participant identifier.
+	• M&A — mergers and acquisitions.
+	• M&E — mortality and expense charge. Variable annuity fee.
+	• NBB / NBO — national best bid / national best offer.
+	• PII — personally identifiable information.
+	• RSL — remote supervisory location.
+	• SCP — supervisory control policies and procedures.
+	• TIF — tax increment financing. Muni structure. (Also used for Transfer Initiation Form.)
+	• TBA — to-be-announced. Mortgage trade before pools are specified.
+	• VWAP — volume-weighted average price.
+	• WAM — weighted average maturity.
+	• WORM — write once, read many. Record-storage format.
+Organizations and venues
+	• ADF — Alternative Display Facility.
+	• ACH — Automated Clearing House.
+	• BOX — BOX Options Exchange.
+	• CFPB — Consumer Financial Protection Bureau.
+	• FHLB — Federal Home Loan Bank.
+	• FASB — Financial Accounting Standards Board.
+	• FICC — Fixed Income Clearing Corporation.
+	• Farmer Mac — Federal Agricultural Mortgage Corporation.
+	• FTC — Federal Trade Commission.
+	• GSCC — Government Securities Clearing Corporation.
+	• IOSCO — International Organization of Securities Commissions.
+	• ISE — International Securities Exchange.
+	• NAC — National Adjudicatory Council. FINRA appeals body.
+	• NASD — National Association of Securities Dealers. FINRA’s predecessor.
+	• TRF — Trade Reporting Facility. FINRA/Nasdaq and FINRA/NYSE.
+	• ORF — OTC Reporting Facility.
+	• PCAOB — Public Company Accounting Oversight Board.
+	• SLMA — Student Loan Marketing Association (Sallie Mae).
+	• SIC — Securities Information Center.
+	• STAMP — Securities Transfer Agents Medallion Program.
+	• OPRA — Options Price Reporting Authority.
+Roles and entities
+	• AR — assistant representative.
+	• BOM — branch office manager.
+	• BDC — business development company.
+	• CFP — certified financial planner.
+	• CPA — certified public accountant.
+	• CFA — chartered financial analyst.
+	• CFO — chief financial officer.
+	• COO — chief operating officer.
+	• CEO — chief executive officer.
+	• DEA — designated examining authority.
+	• DMM — designated market maker.
+	• DPM — designated primary market maker.
+	• LMM — lead market maker.
+	• LLC — limited liability company.
+	• MFP — municipal finance professional. Pay-to-play rules.
+	• NOBO — non-objecting beneficial owner.
+	• OBO — objecting beneficial owner.
+	• PAC — political action committee. Also a CMO tranche (planned amortization class).
+	• QIU — qualified independent underwriter.
+	• QSR — qualified service representative.
+	• ROP — registered options principal.
+	• RA — research analyst.
+	• SMMP — sophisticated municipal market professional.
+	• SA — supervisory analyst.
+	• SIP — securities information processor. Already listed once.
+Forms and IDs
+	• CIM — confidential information memorandum.
+	• CUSIP — Committee on Uniform Securities Identification Procedures. Security ID number.
+	• FOCUS — Financial and Operational Combined Uniform Single report. BD financial filing.
+	• LTID — large trader identification.
+	• POS — preliminary official statement. Muni offering.
+	• SAI — statement of additional information. Mutual fund.
+	• SSI — standing settlement instructions.
+	• SSOI — Supplemental Statement of Income.
+	• TIF — Transfer Initiation Form. Account transfer.
+	• TIN — taxpayer identification number.
+	• PPM — private placement memorandum.
+Products and trades
+	• ADS — American depositary shares.
+	• ARS — auction rate security.
+	• BA — bankers’ acceptance.
+	• FLEX — Cboe Flexible Exchange options.
+	• CATS — certificates of accrual on Treasury securities. Old zero brand.
+	• COP — certificate of participation.
+	• CLO — collateralized loan obligation.
+	• CIT — collective investment trust.
+	• CDS — credit default swap.
+	• DRIP — dividend reinvestment plan.
+	• ESOP — employee stock ownership plan.
+	• ESG — environmental, social, and governance.
+	• EIA — equity-indexed annuity.
+	• ETP — exchange-traded product.
+	• FRN — floating rate note.
+	• GDS — global depositary shares.
+	• GAN — grant anticipation note.
+	• IO — imbalance-only order.
+	• ISO — intermarket sweep order.
+	• IDC — intangible drilling costs. Oil and gas DPP.
+	• ICO — initial coin offering.
+	• IDR — international depositary receipt.
+	• LGIP — local government investment pool.
+	• NFT — non-fungible token.
+	• PAB — proprietary account of a broker-dealer.
+	• PPN — principal-protected note.
+	• RILA — registered index-linked annuity.
+	• Repo — repurchase agreement.
+	• Reverse repo — reverse repurchase agreement.
+	• TIGR — Treasury income growth receipt. Old zero brand.
+	• TED — Treasury-Eurodollar spread.
+Systems
+	• ACT — Automated Confirmation Transaction Service.
+	• CAT — Consolidated Audit Trail.
+	• COATS — Consolidated Options Audit Trail System.
+	• DWAC — Deposit/Withdrawal at Custodian.
+	• DRS — Direct Registration System.
+	• LOPR — Large Options Position Report.
+	• NIIDS — New Issue Information Dissemination Service.
+	• OMS — order management system.
+	• RTTM — Real-Time Trade Matching.
+Rules
+	• FCPA — Foreign Corrupt Practices Act.
+	• ITSFEA — Insider Trading and Securities Fraud Enforcement Act of 1988.
+	• LULD — Limit Up-Limit Down. Trading pause bands.
+Indexes
+	• DJX — Cboe options on the DJIA.
+	• HHI — Herfindahl–Hirschman Index. Concentration measure.
+	• OEX — S&P 100 index.
+	• PMI — Purchasing Managers’ Index.
+	• DIA — SPDR Dow Jones Industrial Average ETF.
+	• SPY — SPDR S&P 500 ETF.
+Ratios and accounting
+	• COGS — cost of goods sold.
+	• DIP — debtor-in-possession financing.
+	• EBIT — earnings before interest and taxes.
+	• EBT — earnings before taxes.
+	• EBITDA — earnings before interest, taxes, depreciation, and amortization.
+	• EBITDAR — EBITDA plus rent.
+	• EV — enterprise value.
+	• IRR — internal rate of return.
+	• LTM / NTM — last 12 months / next 12 months.
+	• NOPAT — net operating profit after tax.
+	• NPV — net present value.
+	• PBO — pension benefit obligation.
+	• P/B — price-to-book.
+	• PEG — price/earnings to growth.
+	• P/S — price-to-sales.
+	• PTBV — price to tangible book value.
+	• PP&E — property, plant, and equipment.
+	• R&D — research and development.
+	• ROA — return on assets. Not the same as rights of accumulation.
+	• ROE — return on equity.
+	• ROIC — return on invested capital.
+	• SOFR — secured overnight financing rate. LIBOR replacement.
+	• SG&A — selling, general, and administrative expense.
+	• WACC — weighted average cost of capital.
+	• YOY — year-over-year.
+	• YTD — year-to-date.

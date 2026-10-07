@@ -1,4 +1,4 @@
-import raw from '../../Acronymes/acronymes.txt?raw';
+import raw from '../../Acronymes/Acronymes.txt?raw';
 
 export interface AcronymCard {
   id: string;
