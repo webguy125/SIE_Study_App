@@ -114,6 +114,7 @@ export type AppView =
   | 'games'
   | 'asteroids'
   | 'finman'
+  | 'summit'
   | 'defender'
   | 'sentence'
   | 'notebook'

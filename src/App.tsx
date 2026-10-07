@@ -14,6 +14,7 @@ import SentenceCompletionComp from './components/SentenceCompletion';
 import LearningGames from './components/LearningGames';
 import VocabularyAsteroids from './components/VocabularyAsteroids';
 import FinMan from './components/FinMan';
+import GorillaSummit from './components/GorillaSummit';
 import SieDefender from './components/SieDefender';
 import ReviewNotebook from './components/ReviewNotebook';
 import ProgressReport from './components/ProgressReport';
@@ -30,6 +31,7 @@ const NAV_ITEMS: { view: AppView; label: string }[] = [
   { view: 'games', label: 'Games' },
   { view: 'asteroids', label: 'Vocab Asteroids' },
   { view: 'finman', label: 'FIN-MAN' },
+  { view: 'summit', label: 'Gorilla Summit' },
   { view: 'defender', label: 'Compliance Defender' },
   { view: 'sentence', label: 'Sentence Completion' },
   { view: 'notebook', label: 'Weak Areas' },
@@ -70,6 +72,8 @@ export default function App() {
         return <VocabularyAsteroids flashcards={flashcards} questions={questions} />;
       case 'finman':
         return <FinMan />;
+      case 'summit':
+        return <GorillaSummit />;
       case 'defender':
         return <SieDefender />;
       case 'notebook':
