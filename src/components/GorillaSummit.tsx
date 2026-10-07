@@ -549,15 +549,42 @@ export default function GorillaSummit() {
         </div>
 
         <div className="card summit-quiz">
-          {artState === 'loading' && <p>Bringing the family to the mountain.</p>}
-          {artState === 'error' && <p>The gorilla pictures did not load.</p>}
-          {artState === 'ready' && phase === 'ready' && (
-            <>
+          <div className="summit-quiz-body">
+            {artState === 'loading' && <p>Bringing the family to the mountain.</p>}
+            {artState === 'error' && <p>The gorilla pictures did not load.</p>}
+            {artState === 'ready' && phase === 'ready' && (
               <p>
                 Dad waits at the bottom with a bucket of {START_BIRDS} birds. Each acronym you know sends him running higher.
                 Pip, Nim, Bo, and Zed climb by themselves, and the first gorilla to the top wins.
                 Tap a baby, or use a bird button, to knock that baby down and hold them for a moment.
               </p>
+            )}
+
+            {artState === 'ready' && phase === 'play' && card && (
+              <>
+                <p className="summit-kicker">{card.section} · {spot.position} of {spot.total}</p>
+                <p className="summit-meaning">{sentence(card.meaning)}</p>
+                <p className="summit-ask">Which acronym is this?</p>
+              </>
+            )}
+
+            {artState === 'ready' && phase === 'won' && (
+              <>
+                <h2>Dad reached the top.</h2>
+                <p>You knew {correct} and missed {missed}. Birds left in the bucket: {birds}.</p>
+              </>
+            )}
+
+            {artState === 'ready' && phase === 'lost' && (
+              <>
+                <h2>{winner} reached the top first.</h2>
+                <p>Dad knew {correct} of {steps} and missed {missed}. Race again and use the birds on whoever is leading.</p>
+              </>
+            )}
+          </div>
+
+          {artState === 'ready' && phase === 'ready' && (
+            <div className="summit-dock">
               <label className="summit-pick">
                 Acronyms
                 <select value={section} onChange={(event) => changeSection(event.target.value)}>
@@ -570,14 +597,11 @@ export default function GorillaSummit() {
               <button type="button" className="btn btn-primary" onClick={startRace} disabled={raceSteps(section) < 1}>
                 Start race
               </button>
-            </>
+            </div>
           )}
 
           {artState === 'ready' && phase === 'play' && card && (
-            <>
-              <p className="summit-kicker">{card.section} · {spot.position} of {spot.total}</p>
-              <p className="summit-meaning">{sentence(card.meaning)}</p>
-              <p className="summit-ask">Which acronym is this?</p>
+            <div className="summit-dock">
               <div className="summit-options">
                 {options.map((opt, index) => {
                   let cls = 'summit-option';
@@ -602,41 +626,27 @@ export default function GorillaSummit() {
                   Next acronym
                 </button>
               )}
-            </>
+              <div className="summit-throws">
+                {BABIES.map((baby, index) => (
+                  <button
+                    key={baby.name}
+                    type="button"
+                    className="btn btn-sm summit-throw"
+                    disabled={birds <= 0}
+                    onClick={() => throwAt(index)}
+                  >
+                    <span className="summit-dot" style={{ background: baby.color }} />
+                    Bird at {baby.name}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
 
-          {artState === 'ready' && phase === 'won' && (
-            <>
-              <h2>Dad reached the top.</h2>
-              <p>You knew {correct} and missed {missed}. Birds left in the bucket: {birds}.</p>
+          {artState === 'ready' && (phase === 'won' || phase === 'lost') && (
+            <div className="summit-dock">
               {feedback && <p className="summit-feedback">{feedback}</p>}
               <button type="button" className="btn btn-primary" onClick={startRace}>Race again</button>
-            </>
-          )}
-
-          {artState === 'ready' && phase === 'lost' && (
-            <>
-              <h2>{winner} reached the top first.</h2>
-              <p>Dad knew {correct} of {steps} and missed {missed}. Race again and use the birds on whoever is leading.</p>
-              {feedback && <p className="summit-feedback">{feedback}</p>}
-              <button type="button" className="btn btn-primary" onClick={startRace}>Race again</button>
-            </>
-          )}
-
-          {artState === 'ready' && phase === 'play' && (
-            <div className="summit-throws">
-              {BABIES.map((baby, index) => (
-                <button
-                  key={baby.name}
-                  type="button"
-                  className="btn btn-sm summit-throw"
-                  disabled={birds <= 0}
-                  onClick={() => throwAt(index)}
-                >
-                  <span className="summit-dot" style={{ background: baby.color }} />
-                  Bird at {baby.name}
-                </button>
-              ))}
             </div>
           )}
         </div>
