@@ -72,6 +72,7 @@ interface Runner {
 }
 
 function babySpeeds(steps: number): number[] {
+  // Stretch the climb with the race. The fastest baby still needs about 7 seconds per correct answer.
   const raceSeconds = Math.max(4, steps) * SECONDS_PER_STEP;
   return [0.76, 0.86, 0.96, 1.05].map((factor) => factor / raceSeconds);
 }
@@ -82,10 +83,10 @@ function makeRunner(): Runner {
     outcome: null,
     dad: 0,
     dadTarget: 0,
-    babies: babySpeeds(8).map((speed) => ({ progress: 0, speed, stunnedUntil: 0 })),
+    babies: babySpeeds(raceSteps('All')).map((speed) => ({ progress: 0, speed, stunnedUntil: 0 })),
     birds: [],
     birdCount: START_BIRDS,
-    steps: 8,
+    steps: raceSteps('All'),
     hits: [],
     time: 0,
     throwPoseUntil: 0,
@@ -163,7 +164,7 @@ export default function GorillaSummit() {
   const cardRef = useRef<AcronymCard | null>(null);
   const optionsRef = useRef<string[]>([]);
   const correctRef = useRef(0);
-  const stepsRef = useRef(8);
+  const stepsRef = useRef(raceSteps('All'));
   const lockRef = useRef(false);
   const dealTimer = useRef(0);
   const [artState, setArtState] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -177,7 +178,7 @@ export default function GorillaSummit() {
   const [feedback, setFeedback] = useState('');
   const [correct, setCorrect] = useState(0);
   const [missed, setMissed] = useState(0);
-  const [steps, setSteps] = useState(8);
+  const [steps, setSteps] = useState(() => raceSteps('All'));
   const [birds, setBirds] = useState(START_BIRDS);
   const [leader, setLeader] = useState<{ name: string; pct: number }>({ name: BABIES[0].name, pct: 0 });
   const [winner, setWinner] = useState('');
@@ -270,6 +271,8 @@ export default function GorillaSummit() {
     const next = correctRef.current + 1;
     correctRef.current = next;
     setCorrect(next);
+    runner.birdCount += 1;
+    setBirds(runner.birdCount);
     if (next >= stepsRef.current) {
       runner.dadTarget = 1;
       runner.outcome = 'won';
@@ -520,6 +523,7 @@ export default function GorillaSummit() {
   const changeSection = (value: string) => {
     sectionRef.current = value;
     setSection(value);
+    if (runnerRef.current.phase === 'ready') setSteps(raceSteps(value));
   };
 
   const showMarks = locked && card;
@@ -554,8 +558,8 @@ export default function GorillaSummit() {
             {artState === 'error' && <p>The gorilla pictures did not load.</p>}
             {artState === 'ready' && phase === 'ready' && (
               <p>
-                Dad waits at the bottom with a bucket of {START_BIRDS} birds. Each acronym you know sends him running higher.
-                Pip, Nim, Bo, and Zed climb by themselves, and the first gorilla to the top wins.
+                Dad starts with a bucket of {START_BIRDS} birds. Each acronym you know sends him higher and adds one bird.
+                All acronyms is {raceSteps('All')} to the top. One group is every acronym in that group, and the babies climb slower on a longer race.
                 Tap a baby, or use a bird button, to knock that baby down and hold them for a moment.
               </p>
             )}

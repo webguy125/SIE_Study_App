@@ -61,9 +61,13 @@ export function sectionSize(section: string): number {
   return poolFor(section).length;
 }
 
-/** A race is eight correct answers, or the whole group when the group is smaller. */
+/** All acronyms is a 30-correct race. One group is every acronym in that group. */
+export const ALL_RACE_STEPS = 30;
+
 export function raceSteps(section: string): number {
-  return Math.min(8, poolFor(section).length);
+  const size = poolFor(section).length;
+  if (section === 'All') return Math.min(ALL_RACE_STEPS, size);
+  return size;
 }
 
 function shuffle(ids: string[]): string[] {
