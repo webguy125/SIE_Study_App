@@ -1,5 +1,4 @@
-import { SIE_ACRONYMS } from '../data/sieAcronyms';
-import { SIE_VOCABULARY } from '../data/sieVocabulary';
+import { ACRONYMS } from './acronyms';
 import type { CustomVocabEntry, Flashcard, Question, SectionId } from '../types';
 import { SECTION_NAMES } from '../types';
 import type { SieVocabTerm } from '../data/sieVocabulary';
@@ -29,14 +28,11 @@ const GENERIC_WORDS = new Set([
   'offering', 'offerings', 'common', 'preferred', 'corporate', 'customer', 'general',
 ]);
 
-const BASE_ACRONYMS = new Set([
-  ...SIE_ACRONYMS.map((e) => e.term.toUpperCase()),
-  'ETF', 'ADR', 'GO', 'SEC', 'FINRA', 'MSRB', 'SAR', 'AML', 'IPO', 'NAV', 'REIT', 'UIT',
-  'CTR', 'SIPC', 'FDIC', 'DTCC', 'NSCC', 'OCC', 'CBOE', 'PDT', 'REG', 'T+1', 'SIE',
-  'GTC', 'TIPS', 'MBS', 'CMO', 'IRA', 'UTMA', 'UGMA', 'MNPI', 'OFAC', 'ROA', 'LOI', 'YTM',
-  'YTC', 'U4', 'U5', 'EMMA', 'ODD', 'LGIP', 'DPP', 'ETN', 'ETP', 'GNMA', 'FNMA', 'FHLMC',
-  'KYC', 'BCP', 'SDN', 'OTC', 'NASAA', 'STRIPS', 'CPI', 'GDP', 'CDSC', 'FINCEN',
-]);
+function acronymTokens(acronym: string): string[] {
+  return acronym.toUpperCase().split(/[^A-Z0-9+]+/).filter((token) => token.length >= 2);
+}
+
+const BASE_ACRONYMS = new Set(ACRONYMS.flatMap((card) => acronymTokens(card.acronym)));
 
 let activeAcronyms = new Set(BASE_ACRONYMS);
 
@@ -45,6 +41,43 @@ export interface VocabBuildOptions {
   includeCustom?: boolean;
   customSections?: SectionId[];
   customEntries?: CustomVocabEntry[];
+  /** Gorilla Summit group. "All" uses the full acronym file. */
+  acronymSection?: string;
+}
+
+function sentence(text: string): string {
+  const trimmed = text.trim();
+  if (!trimmed) return '';
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+}
+
+/** One asteroid pair for each acronym in the Gorilla Summit list. */
+export function acronymPairs(section = 'All'): VocabPair[] {
+  const cards = section === 'All' ? ACRONYMS : ACRONYMS.filter((card) => card.section === section);
+  return cards.map((card) => ({
+    id: card.id,
+    phrase: card.acronym,
+    word: card.acronym,
+    termLabel: card.acronym,
+    term: sentence(card.meaning),
+    hint: card.section,
+    isAcronymRound: true,
+  }));
+}
+
+/** Decoys use a different acronym from the target and from each other. */
+export function pickDecoys(pool: VocabPair[], target: VocabPair, count: number): VocabPair[] {
+  const used = new Set<string>([target.word.toLowerCase()]);
+  const picks: VocabPair[] = [];
+  for (const candidate of shufflePool(pool)) {
+    if (candidate.id === target.id) continue;
+    const key = candidate.word.toLowerCase();
+    if (used.has(key)) continue;
+    used.add(key);
+    picks.push(candidate);
+    if (picks.length >= count) break;
+  }
+  return picks;
 }
 
 export function isAcronymPair(pair: VocabPair): boolean {
@@ -213,8 +246,7 @@ export function buildVocabPool(
   const includeCustom = options.includeCustom !== false;
 
   if (includeBuiltIn) {
-    for (const entry of SIE_ACRONYMS) addVocabEntry(entry, pool, seenClues);
-    for (const entry of SIE_VOCABULARY) addVocabEntry(entry, pool, seenClues);
+    pool.push(...acronymPairs(options.acronymSection ?? 'All'));
   }
 
   if (includeCustom) {

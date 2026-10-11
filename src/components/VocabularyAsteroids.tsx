@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { buildVocabPool, isAcronymPair, isMultiWordPhrase, parseTermLabel, shufflePool, type VocabPair } from '../lib/asteroidVocab';
+import { ACRONYM_SECTIONS, ACRONYMS, sectionSize } from '../lib/acronyms';
+import { buildVocabPool, isAcronymPair, isMultiWordPhrase, parseTermLabel, pickDecoys, shufflePool, type VocabPair } from '../lib/asteroidVocab';
 import {
   drawClassicSaucer,
   drawSaucerAnswerLabel,
@@ -96,6 +97,15 @@ const DECOYS_PER_ROUND = 5;
 const ASTEROIDS_ON_ADVANCE = 4;
 const ASTEROID_MERGE_DELAY_MS = 3000;
 
+function acronymLines(word: string): string[] {
+  if (word.length <= 12) return [word];
+  const parts = word.split(/\s*\/\s*/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length > 1 && parts.length <= 4) return parts;
+  const splitAt = word.lastIndexOf(' ', Math.ceil(word.length / 2));
+  if (splitAt > 2) return [word.slice(0, splitAt), word.slice(splitAt + 1)];
+  return [word];
+}
+
 function uid() {
   return Math.random().toString(36).slice(2, 10);
 }
@@ -134,7 +144,7 @@ function makeAsteroid(
   splitGeneration = 1,
   mergeEligibleAt = 0,
 ): Asteroid {
-  const margin = radius + 24;
+  const margin = radius + 40;
   const x = position?.x ?? margin + Math.random() * (bounds.w - margin * 2);
   const y = position?.y ?? margin + Math.random() * (bounds.h - margin * 2);
   const speed = 0.45 + Math.random() * 0.75;
@@ -154,15 +164,18 @@ function makeAsteroid(
   };
 }
 
-function spawnRound(pair: VocabPair, pool: VocabPair[], bounds: { w: number; h: number }): Asteroid[] {
-  const decoys = shufflePool(pool.filter((p) => p.id !== pair.id)).slice(0, DECOYS_PER_ROUND);
+function spawnRound(pair: VocabPair, decoys: VocabPair[], bounds: { w: number; h: number }): Asteroid[] {
   const asteroids: Asteroid[] = [];
   const shipSafe = { x: bounds.w / 2, y: bounds.h / 2 };
 
   const placeAsteroid = (word: string, isTarget: boolean) => {
-    for (let attempt = 0; attempt < 30; attempt++) {
+    for (let attempt = 0; attempt < 40; attempt++) {
       const a = makeAsteroid(word, isTarget, LARGE_ASTEROID_RADIUS, bounds);
-      if (dist(a.x, a.y, shipSafe.x, shipSafe.y) > a.radius + 90) {
+      const clearOfShip = dist(a.x, a.y, shipSafe.x, shipSafe.y) > a.radius + 90;
+      const clearOfOthers = asteroids.every(
+        (other) => dist(a.x, a.y, other.x, other.y) > a.radius + other.radius + 36,
+      );
+      if (clearOfShip && clearOfOthers) {
         asteroids.push(a);
         return;
       }
@@ -367,8 +380,17 @@ function reconcileAsteroidMerges(
   return list;
 }
 
+interface SeenAcronym {
+  id: string;
+  acronym: string;
+  meaning: string;
+  section: string;
+  asked: boolean;
+}
+
 export default function VocabularyAsteroids({ flashcards, questions }: Props) {
   const [customVocab, setCustomVocab] = useState(() => loadCustomVocabSettings());
+  const [section, setSection] = useState('All');
 
   const pool = useMemo(
     () => buildVocabPool(flashcards, questions, {
@@ -376,8 +398,9 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
       includeCustom: customVocab.includeCustom,
       customSections: customVocab.customSections,
       customEntries: customVocab.entries,
+      acronymSection: section,
     }),
-    [flashcards, questions, customVocab],
+    [flashcards, questions, customVocab, section],
   );
 
   const handleCustomVocabChange = useCallback((settings: CustomVocabSettings) => {
@@ -420,6 +443,29 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
   const [feedback, setFeedback] = useState('');
   const [gameOver, setGameOver] = useState(false);
   const [complete, setComplete] = useState(false);
+  const [seen, setSeen] = useState<SeenAcronym[]>([]);
+  const seenRef = useRef<SeenAcronym[]>([]);
+
+  const rememberRound = useCallback((target: VocabPair, decoys: VocabPair[]) => {
+    const list = seenRef.current;
+    const note = (pair: VocabPair, asked: boolean) => {
+      const found = list.find((item) => item.id === pair.id);
+      if (found) {
+        if (asked) found.asked = true;
+        return;
+      }
+      list.push({
+        id: pair.id,
+        acronym: pair.word,
+        meaning: pair.term,
+        section: pair.hint,
+        asked,
+      });
+    };
+    note(target, true);
+    for (const decoy of decoys) note(decoy, false);
+    setSeen(list.map((item) => ({ ...item })));
+  }, []);
 
   const currentPair = pool[order[roundIndex] ?? 0];
   const targetWordRef = useRef('');
@@ -441,14 +487,18 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
       angle: -Math.PI / 2,
     };
     stateRef.current.bullets = [];
-    stateRef.current.asteroids = spawnRound(pair, pool, { w: CANVAS_W, h: CANVAS_H });
+    const decoys = pickDecoys(pool, pair, DECOYS_PER_ROUND);
+    stateRef.current.asteroids = spawnRound(pair, decoys, { w: CANVAS_W, h: CANVAS_H });
+    rememberRound(pair, decoys);
     stateRef.current.invulnUntil = performance.now() + 1800;
     stateRef.current.running = true;
     resetRoundPressure(performance.now());
     setFeedback('');
-  }, [pool, resetRoundPressure]);
+  }, [pool, resetRoundPressure, rememberRound]);
 
   const startGame = useCallback(() => {
+    seenRef.current = [];
+    setSeen([]);
     const shuffled = shufflePool(pool.map((_, i) => i)).slice(0, Math.min(ROUNDS_PER_GAME, pool.length));
     orderRef.current = shuffled;
     setOrder(shuffled);
@@ -480,10 +530,8 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
       placeAsteroidSafe(pair.word, true, LARGE_ASTEROID_RADIUS, bounds, ship, s.asteroids),
     ];
 
-    const advanceDecoys = shufflePool(pool.filter((p) => p.id !== pair.id)).slice(
-      0,
-      ASTEROIDS_ON_ADVANCE - 1,
-    );
+    const advanceDecoys = pickDecoys(pool, pair, ASTEROIDS_ON_ADVANCE - 1);
+    rememberRound(pair, advanceDecoys);
     for (const decoy of advanceDecoys) {
       spawned.push(
         placeAsteroidSafe(
@@ -499,7 +547,7 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
 
     s.asteroids.push(...spawned);
     resetRoundPressure(performance.now());
-  }, [pool, resetRoundPressure]);
+  }, [pool, resetRoundPressure, rememberRound]);
 
   const goToNextRound = useCallback((pairOrder: number[]) => {
     const nextRound = roundRef.current + 1;
@@ -507,7 +555,7 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
       advancingRef.current = false;
       setComplete(true);
       stateRef.current.running = false;
-      setFeedback('Mission complete! All vocabulary terms cleared.');
+      setFeedback('Mission complete. Study the acronyms that were on the screen.');
       return;
     }
     advanceTerm(nextRound, pairOrder);
@@ -515,6 +563,8 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
 
   useEffect(() => {
     if (pool.length === 0) return;
+    seenRef.current = [];
+    setSeen([]);
     const shuffled = shufflePool(pool.map((_, i) => i)).slice(0, Math.min(ROUNDS_PER_GAME, pool.length));
     orderRef.current = shuffled;
     setOrder(shuffled);
@@ -547,6 +597,20 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
       window.removeEventListener('keyup', onUp);
     };
   }, []);
+
+  const pressControl = (code: string) => (event: React.PointerEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    keysRef.current[code] = true;
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      /* The button still receives pointerup. */
+    }
+  };
+
+  const releaseControl = (code: string) => () => {
+    keysRef.current[code] = false;
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -669,7 +733,7 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
           if (next <= 0) {
             setGameOver(true);
             s.running = false;
-            setFeedback('Game over — review the term and try again.');
+            setFeedback('Game over. The acronyms from this game are listed below.');
           } else {
             setFeedback('Ship hit! Match the definition above to the correct word.');
             s.ship = { x: CANVAS_W / 2, y: CANVAS_H / 2, vx: 0, vy: 0, angle: -Math.PI / 2 };
@@ -776,10 +840,20 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
         ctx.fillStyle = '#f8fafc';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        const fontSize = Math.max(10, Math.min(14, a.radius * 0.38));
+        const lines = acronymLines(a.word);
+        let fontSize = Math.min(16, Math.max(12, a.radius * 0.38));
+        const maxWidth = a.radius * 1.85;
         ctx.font = `600 ${fontSize}px 'Segoe UI', system-ui, sans-serif`;
-        const label = a.word.length > 18 ? `${a.word.slice(0, 16)}…` : a.word;
-        ctx.fillText(label, 0, 0);
+        const linesFit = () => lines.every((line) => ctx.measureText(line).width <= maxWidth);
+        while (fontSize > 9 && !linesFit()) {
+          fontSize -= 1;
+          ctx.font = `600 ${fontSize}px 'Segoe UI', system-ui, sans-serif`;
+        }
+        const lineHeight = fontSize + 2;
+        const startY = -((lines.length - 1) * lineHeight) / 2;
+        lines.forEach((line, index) => {
+          ctx.fillText(line, 0, startY + index * lineHeight);
+        });
         ctx.restore();
       }
 
@@ -833,89 +907,150 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
     ? new Set(customVocab.entries.map((e) => e.id)).size
     : 0;
 
+  const ended = gameOver || complete;
+  const studyList = [
+    ...seen.filter((item) => item.asked),
+    ...seen.filter((item) => !item.asked),
+  ];
+
+  const controlButton = (code: string, label: string) => (
+    <button
+      type="button"
+      className="astro-pad-btn"
+      onPointerDown={pressControl(code)}
+      onPointerUp={releaseControl(code)}
+      onPointerCancel={releaseControl(code)}
+      onContextMenu={(event) => event.preventDefault()}
+    >
+      {label}
+    </button>
+  );
+
   if (pool.length === 0) {
     return (
       <div className="page astro-page">
         <h1>Vocab Asteroids</h1>
-        <p className="subtitle">Read the definition, then shoot the matching word — SIE acronyms and vocabulary terms, plus your own custom cards.</p>
+        <p className="subtitle">Shoot the acronym that matches the meaning. The list is the same one Gorilla Summit uses.</p>
         <CustomVocabPanel settings={customVocab} onChange={handleCustomVocabChange} />
         <div className="card">
-          <p>No vocabulary available. Enable the built-in SIE deck or add custom terms above.</p>
+          <p>No acronyms available. Turn the built-in list back on, or add your own terms above.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="page astro-page">
+    <div className={`page astro-page${ended ? ' astro-ended' : ''}`}>
       <h1>Vocab Asteroids</h1>
-      <p className="subtitle">Read the definition, then shoot the matching word — SIE acronyms (MSRB, FINRA) and vocabulary terms (cumulative preferred, market order, etc.).</p>
+      <p className="subtitle">
+        Read the meaning, then shoot that acronym. After the game, study every acronym that was on the screen.
+      </p>
 
       <CustomVocabPanel settings={customVocab} onChange={handleCustomVocabChange} />
 
-      <div className="astro-canvas-wrap card">
-        <div className="astro-screen-hud">
-          {currentPair && isMultiWordPhrase(currentPair) ? (
-            <>
-              <span className="astro-label">Complete the term</span>
-              <p className="astro-phrase">
-                {parseTermLabel(currentPair.termLabel).map((segment, i) =>
-                  segment.type === 'blank' ? (
-                    <span key={i} className="astro-blank" aria-label="missing word">___</span>
-                  ) : (
-                    <span key={i} className="astro-context">{segment.value}</span>
-                  ),
-                )}
-              </p>
-              <span className="astro-label">Definition</span>
-              <p className="astro-term">{currentPair.term}</p>
-            </>
-          ) : currentPair && isAcronymPair(currentPair) ? (
-            <>
-              <span className="astro-label">What acronym is this?</span>
-              <p className="astro-term">{currentPair.term}</p>
-              <span className="astro-label">Shoot the matching acronym</span>
-            </>
-          ) : (
-            <>
-              <span className="astro-label">Definition</span>
-              <p className="astro-term">{currentPair?.term ?? 'Loading…'}</p>
-            </>
-          )}
-          <div className="astro-stats">
-            <span>Score: {score}</span>
-            <span>Lives: {lives}</span>
-            <span>Round: {Math.min(roundIndex + 1, order.length)}/{order.length}</span>
+      <div className="astro-board">
+        <div className="astro-canvas-wrap card">
+          <div className="astro-screen-hud">
+            {currentPair && isAcronymPair(currentPair) ? (
+              <>
+                <span className="astro-label">What acronym is this?</span>
+                <p className="astro-term">{currentPair.term}</p>
+                <span className="astro-label">Shoot the matching acronym</span>
+              </>
+            ) : currentPair && isMultiWordPhrase(currentPair) ? (
+              <>
+                <span className="astro-label">Complete the term</span>
+                <p className="astro-phrase">
+                  {parseTermLabel(currentPair.termLabel).map((segment, i) =>
+                    segment.type === 'blank' ? (
+                      <span key={i} className="astro-blank" aria-label="missing word">___</span>
+                    ) : (
+                      <span key={i} className="astro-context">{segment.value}</span>
+                    ),
+                  )}
+                </p>
+                <span className="astro-label">Definition</span>
+                <p className="astro-term">{currentPair.term}</p>
+              </>
+            ) : (
+              <>
+                <span className="astro-label">Definition</span>
+                <p className="astro-term">{currentPair?.term ?? 'Loading…'}</p>
+              </>
+            )}
+            <div className="astro-stats">
+              <span>Score: {score}</span>
+              <span>Lives: {lives}</span>
+              <span>Round: {Math.min(roundIndex + 1, order.length)}/{order.length}</span>
+              <label className="astro-pick">
+                Acronyms
+                <select value={section} onChange={(event) => setSection(event.target.value)}>
+                  <option value="All">All acronyms ({ACRONYMS.length})</option>
+                  {ACRONYM_SECTIONS.map((name) => (
+                    <option key={name} value={name}>{name} ({sectionSize(name)})</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div className="astro-stage">
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_W}
+              height={CANVAS_H}
+              className="astro-canvas"
+              aria-label="Vocabulary asteroids game"
+            />
+
+            {ended && (
+              <div className="astro-overlay">
+                <p>{complete ? 'All acronyms cleared!' : 'Game Over'}</p>
+                <button type="button" className="btn btn-primary" onClick={startGame}>Play Again</button>
+              </div>
+            )}
           </div>
         </div>
 
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_W}
-          height={CANVAS_H}
-          className="astro-canvas"
-          aria-label="Vocabulary asteroids game"
-        />
+        <div className="astro-pad" aria-label="Ship controls">
+          {controlButton('ArrowLeft', 'Left')}
+          {controlButton('ArrowUp', 'Thrust')}
+          {controlButton('ArrowRight', 'Right')}
+          {controlButton('Space', 'Fire')}
+        </div>
 
-        {(gameOver || complete) && (
-          <div className="astro-overlay">
-            <p>{complete ? 'All terms cleared!' : 'Game Over'}</p>
-            <button type="button" className="btn btn-primary" onClick={startGame}>Play Again</button>
-          </div>
+        {feedback && <p className="astro-feedback">{feedback}</p>}
+
+        {ended && (
+          <section className="card astro-study" aria-label="Acronyms from this game">
+            <div className="astro-study-head">
+              <h2>Acronyms from this game</h2>
+              <button type="button" className="btn btn-primary" onClick={startGame}>Play again</button>
+            </div>
+            <p>These acronyms were on the screen. Read the meaning for each one.</p>
+            <ul>
+              {studyList.map((item) => (
+                <li key={item.id}>
+                  <div className="astro-study-title">
+                    <strong>{item.acronym}</strong>
+                    {item.asked && <span className="astro-asked">Asked</span>}
+                    <span className="astro-study-section">{item.section}</span>
+                  </div>
+                  <p>{item.meaning}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
-      </div>
 
-      {feedback && <p className="astro-feedback">{feedback}</p>}
-
-      <div className="astro-controls card">
-        <p><strong>Controls:</strong> ← → or A/D rotate • ↑ or W thrust • Space or J fire — you fly the triangle; the gold flying saucer is the hint enemy.</p>
-        <p className="match-hint">
-          {pool.length} definitions across {new Set(pool.map((p) => p.phrase)).size} terms
-          ({new Set(pool.filter((p) => isAcronymPair(p)).map((p) => p.phrase)).size} acronyms
-          {customTermCount > 0 ? `, ${customTermCount} custom` : ''}). New games spawn {DECOYS_PER_ROUND + 1} large asteroids; each correct answer adds {ASTEROIDS_ON_ADVANCE} more — read the labels, not the rock size. Wrong asteroids split up to {MAX_ASTEROID_SPLIT_GENERATION} times; matching fragments rejoin after {ASTEROID_MERGE_DELAY_MS / 1000}s if they collide.
-          Stall {ROUND_TIMEOUT_MS / 1000}s+ and a gold saucer appears with the answer, firing in all directions — shoot it for bonus points (it cannot hurt you); only the correct asteroid completes the round.
-        </p>
-        <button type="button" className="btn" onClick={startGame}>New Game</button>
+        <div className="astro-controls card">
+          <p><strong>Controls:</strong> On a keyboard, ← → or A/D rotate, ↑ or W thrust, Space or J fire. On a tablet, use the Left, Thrust, Right, and Fire buttons.</p>
+          <p className="match-hint">
+            {pool.length} acronyms in this group
+            {customTermCount > 0 ? `, plus ${customTermCount} custom` : ''}. A round puts {DECOYS_PER_ROUND + 1} large asteroids on screen. Wrong rocks split, and the gold saucer shows the answer if you wait. When the game ends, the list below has the meaning of every acronym that appeared.
+          </p>
+          <button type="button" className="btn" onClick={startGame}>New Game</button>
+        </div>
       </div>
     </div>
   );
