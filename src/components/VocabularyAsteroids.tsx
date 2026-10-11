@@ -32,7 +32,7 @@ interface Asteroid {
   vertices: Point[];
   word: string;
   isTarget: boolean;
-  /** 1 = largest; splits up to MAX_ASTEROID_SPLIT_GENERATION on player hits */
+  /** 1 = full rock. It splits once. The pieces are destroyed on the next hit. */
   splitGeneration: number;
   /** Earliest timestamp (ms) this fragment may merge with a matching sibling. */
   mergeEligibleAt: number;
@@ -86,7 +86,7 @@ const MAX_BULLETS = 6;
 const FIRE_COOLDOWN = 220;
 const ENEMY_FIRE_COOLDOWN = 1500;
 const ROUNDS_PER_GAME = 20;
-const MAX_ASTEROID_SPLIT_GENERATION = 4;
+const MAX_ASTEROID_SPLIT_GENERATION = 2;
 const ASTEROID_SPLIT_SCALE = 0.62;
 const LARGE_ASTEROID_RADIUS = 42;
 /** One correct acronym plus decoys. A short group uses as many unique acronyms as it has. */
@@ -1077,7 +1077,7 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
           <p><strong>Controls:</strong> On a keyboard, ← → or A/D rotate, ↑ or W thrust, Space or J fire. On a tablet, use the Left, Thrust, Right, and Fire buttons.</p>
           <p className="match-hint">
             {pool.length} acronyms in this group
-            {customTermCount > 0 ? `, plus ${customTermCount} custom` : ''}. Each board starts with 8 full rocks, and one of them is the acronym. A smaller group uses every acronym it has. Later boards bring the gold saucer in sooner, then add a second saucer. Each saucer starts on its own timer and fires one shot at a time. Wrong rocks split. When the game ends, the list below has the meaning of every acronym that appeared.
+            {customTermCount > 0 ? `, plus ${customTermCount} custom` : ''}. Each board starts with 8 full rocks, and one of them is the acronym. A smaller group uses every acronym it has. Later boards bring the gold saucer in sooner, then add a second saucer. Each saucer starts on its own timer and fires one shot at a time. A wrong rock splits once, and the next hit destroys the piece. When the game ends, the list below has the meaning of every acronym that appeared.
           </p>
           <button type="button" className="btn" onClick={startGame}>New Game</button>
         </div>
