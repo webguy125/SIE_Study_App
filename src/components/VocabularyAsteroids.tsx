@@ -69,6 +69,7 @@ interface EnemyShip {
 
 interface EnemyBullet {
   id: string;
+  ownerId: string;
   x: number;
   y: number;
   vx: number;
@@ -84,15 +85,19 @@ const ENEMY_BULLET_SPEED = 4.8;
 const MAX_BULLETS = 6;
 const FIRE_COOLDOWN = 220;
 const ENEMY_FIRE_COOLDOWN = 1500;
-const ROUND_TIMEOUT_MS = 18000;
 const ROUNDS_PER_GAME = 20;
 const MAX_ASTEROID_SPLIT_GENERATION = 4;
 const ASTEROID_SPLIT_SCALE = 0.62;
 const LARGE_ASTEROID_RADIUS = 42;
-const DECOYS_PER_ROUND = 5;
-/** Large rocks added after each correct answer (1 target + decoys). */
-const ASTEROIDS_ON_ADVANCE = 4;
+/** One correct acronym plus decoys. A short group uses as many unique acronyms as it has. */
+const ROCKS_PER_BOARD = 8;
 const ASTEROID_MERGE_DELAY_MS = 3000;
+/** First boards wait longer. By board 8 the wait is at the floor and a second saucer joins. */
+const SAUCER_SLOW_MS = 16000;
+const SAUCER_FAST_MS = 5500;
+const SAUCER_RAMP_BOARDS = 8;
+const SAUCER_SPAWN_GAP_MS = 2200;
+const ADVANCE_INVULN_MS = 800;
 
 function acronymLines(word: string): string[] {
   if (word.length <= 12) return [word];
@@ -161,50 +166,104 @@ function makeAsteroid(
   };
 }
 
-function spawnRound(pair: VocabPair, decoys: VocabPair[], bounds: { w: number; h: number }): Asteroid[] {
+function rockFits(rock: Asteroid, ship: { x: number; y: number }, others: Asteroid[]): boolean {
+  const clearOfShip = dist(rock.x, rock.y, ship.x, ship.y) > rock.radius + 90;
+  const clearOfOthers = others.every(
+    (other) => dist(rock.x, rock.y, other.x, other.y) > rock.radius + other.radius + 36,
+  );
+  return clearOfShip && clearOfOthers;
+}
+
+function spawnRound(
+  pair: VocabPair,
+  decoys: VocabPair[],
+  bounds: { w: number; h: number },
+  ship: { x: number; y: number },
+): Asteroid[] {
   const asteroids: Asteroid[] = [];
-  const shipSafe = { x: bounds.w / 2, y: bounds.h / 2 };
+  const words = [
+    { word: pair.word, isTarget: true },
+    ...decoys.map((decoy) => ({ word: decoy.word, isTarget: false })),
+  ];
 
   const placeAsteroid = (word: string, isTarget: boolean) => {
-    for (let attempt = 0; attempt < 40; attempt++) {
-      const a = makeAsteroid(word, isTarget, LARGE_ASTEROID_RADIUS, bounds);
-      const clearOfShip = dist(a.x, a.y, shipSafe.x, shipSafe.y) > a.radius + 90;
-      const clearOfOthers = asteroids.every(
-        (other) => dist(a.x, a.y, other.x, other.y) > a.radius + other.radius + 36,
-      );
-      if (clearOfShip && clearOfOthers) {
-        asteroids.push(a);
+    for (let attempt = 0; attempt < 80; attempt++) {
+      const rock = makeAsteroid(word, isTarget, LARGE_ASTEROID_RADIUS, bounds);
+      if (rockFits(rock, ship, asteroids)) {
+        asteroids.push(rock);
         return;
       }
     }
-    asteroids.push(makeAsteroid(word, isTarget, LARGE_ASTEROID_RADIUS, bounds));
+
+    const margin = LARGE_ASTEROID_RADIUS + 40;
+    let best: Asteroid | null = null;
+    let bestScore = -Infinity;
+    for (let slot = 0; slot < 24; slot++) {
+      const col = slot % 6;
+      const row = Math.floor(slot / 6);
+      const rock = makeAsteroid(word, isTarget, LARGE_ASTEROID_RADIUS, bounds, {
+        x: margin + ((col + 0.5) * (bounds.w - margin * 2)) / 6,
+        y: margin + ((row + 0.5) * (bounds.h - margin * 2)) / 4,
+      });
+      const shipGap = dist(rock.x, rock.y, ship.x, ship.y) - (rock.radius + 90);
+      const otherGap = asteroids.reduce((gap, other) => Math.min(
+        gap,
+        dist(rock.x, rock.y, other.x, other.y) - (rock.radius + other.radius + 36),
+      ), Infinity);
+      const score = Math.min(shipGap, otherGap);
+      if (score > bestScore) {
+        bestScore = score;
+        best = rock;
+      }
+    }
+    if (best) asteroids.push(best);
   };
 
-  placeAsteroid(pair.word, true);
-  for (const decoy of decoys) {
-    placeAsteroid(decoy.word, false);
-  }
-
+  for (const entry of words) placeAsteroid(entry.word, entry.isTarget);
   return asteroids;
 }
 
-function placeAsteroidSafe(
-  word: string,
-  isTarget: boolean,
-  radius: number,
-  bounds: { w: number; h: number },
-  ship: Ship,
-  existing: Asteroid[],
-): Asteroid {
-  for (let attempt = 0; attempt < 40; attempt++) {
-    const a = makeAsteroid(word, isTarget, radius, bounds);
-    const clearOfShip = dist(a.x, a.y, ship.x, ship.y) > radius + 72;
-    const clearOfOthers = existing.every(
-      (e) => dist(a.x, a.y, e.x, e.y) > radius + e.radius + 24,
-    );
-    if (clearOfShip && clearOfOthers) return a;
+function saucerCountForBoard(boardIndex: number): number {
+  return boardIndex >= SAUCER_RAMP_BOARDS ? 2 : 1;
+}
+
+function saucerBaseDelay(boardIndex: number): number {
+  const ramp = Math.min(1, boardIndex / SAUCER_RAMP_BOARDS);
+  return SAUCER_SLOW_MS + (SAUCER_FAST_MS - SAUCER_SLOW_MS) * ramp;
+}
+
+function randomSaucerDelay(base: number): number {
+  return base * (0.55 + Math.random() * 0.7);
+}
+
+function separateSpawnTime(when: number, others: number[]): number {
+  let next = when;
+  for (let guard = 0; guard < 6; guard++) {
+    const close = others.find((other) => Math.abs(next - other) < SAUCER_SPAWN_GAP_MS);
+    if (close === undefined) return next;
+    next = Math.max(next, close) + SAUCER_SPAWN_GAP_MS + Math.random() * 2800;
   }
-  return makeAsteroid(word, isTarget, radius, bounds);
+  return next;
+}
+
+function scheduleSaucerSpawns(now: number, boardIndex: number): number[] {
+  const base = saucerBaseDelay(boardIndex);
+  const times: number[] = [];
+  for (let i = 0; i < saucerCountForBoard(boardIndex); i++) {
+    times.push(separateSpawnTime(now + randomSaucerDelay(base), times));
+  }
+  times.sort((a, b) => a - b);
+  return times;
+}
+
+function queueSaucerReplacement(
+  pending: number[],
+  now: number,
+  boardIndex: number,
+  activeCount: number,
+): void {
+  if (activeCount + pending.length >= saucerCountForBoard(boardIndex)) return;
+  pending.push(separateSpawnTime(now + randomSaucerDelay(saucerBaseDelay(boardIndex)), pending));
 }
 
 function spawnEnemy(bounds: { w: number; h: number }, answerWord: string): EnemyShip {
@@ -239,12 +298,13 @@ function damageAsteroidFromSaucer(
   return asteroids.filter((a) => a.id !== asteroid.id).concat(fragments);
 }
 
-/** One shot in a random direction. The saucer waits until that bullet is gone. */
+/** One shot in a random direction. This saucer waits until its own bullet is gone. */
 function fireSaucerShot(enemy: EnemyShip, bullets: EnemyBullet[]): void {
-  if (bullets.length > 0) return;
+  if (bullets.some((bullet) => bullet.ownerId === enemy.id)) return;
   const angle = Math.random() * Math.PI * 2;
   bullets.push({
     id: uid(),
+    ownerId: enemy.id,
     x: enemy.x,
     y: enemy.y,
     vx: Math.cos(angle) * ENEMY_BULLET_SPEED,
@@ -395,22 +455,22 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
     ship: { x: CANVAS_W / 2, y: CANVAS_H / 2, vx: 0, vy: 0, angle: -Math.PI / 2 } as Ship,
     asteroids: [] as Asteroid[],
     bullets: [] as Bullet[],
-    enemy: null as EnemyShip | null,
+    enemies: [] as EnemyShip[],
     enemyBullets: [] as EnemyBullet[],
+    pendingSpawns: [] as number[],
     lastShot: 0,
     invulnUntil: 0,
     running: true,
     roundStartedAt: 0,
-    nextEnemySpawnAt: 0,
     enemyWarningShown: false,
   });
 
   const resetRoundPressure = useCallback((now: number) => {
     const s = stateRef.current;
-    s.enemy = null;
+    s.enemies = [];
     s.enemyBullets = [];
+    s.pendingSpawns = scheduleSaucerSpawns(now, roundRef.current);
     s.roundStartedAt = now;
-    s.nextEnemySpawnAt = now + ROUND_TIMEOUT_MS;
     s.enemyWarningShown = false;
   }, []);
 
@@ -457,16 +517,17 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
     if (!pair) return;
     advancingRef.current = false;
     roundRef.current = index;
-    stateRef.current.ship = {
+    const ship: Ship = {
       x: CANVAS_W / 2,
       y: CANVAS_H / 2,
       vx: 0,
       vy: 0,
       angle: -Math.PI / 2,
     };
+    stateRef.current.ship = ship;
     stateRef.current.bullets = [];
-    const decoys = pickDecoys(pool, pair, DECOYS_PER_ROUND);
-    stateRef.current.asteroids = spawnRound(pair, decoys, { w: CANVAS_W, h: CANVAS_H });
+    const decoys = pickDecoys(pool, pair, ROCKS_PER_BOARD - 1);
+    stateRef.current.asteroids = spawnRound(pair, decoys, { w: CANVAS_W, h: CANVAS_H }, ship);
     rememberRound(pair, decoys);
     stateRef.current.invulnUntil = performance.now() + 1800;
     stateRef.current.running = true;
@@ -497,33 +558,12 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
     setRoundIndex(nextIndex);
     setFeedback('Correct!');
 
-    const bounds = { w: CANVAS_W, h: CANVAS_H };
     const s = stateRef.current;
-    const ship = s.ship;
-
-    // Keep chipped decoys on the board; strip any leftover target flags so they cannot auto-complete a round.
-    s.asteroids = s.asteroids.map((a) => (a.isTarget ? { ...a, isTarget: false } : a));
-
-    const spawned: Asteroid[] = [
-      placeAsteroidSafe(pair.word, true, LARGE_ASTEROID_RADIUS, bounds, ship, s.asteroids),
-    ];
-
-    const advanceDecoys = pickDecoys(pool, pair, ASTEROIDS_ON_ADVANCE - 1);
-    rememberRound(pair, advanceDecoys);
-    for (const decoy of advanceDecoys) {
-      spawned.push(
-        placeAsteroidSafe(
-          decoy.word,
-          false,
-          LARGE_ASTEROID_RADIUS,
-          bounds,
-          ship,
-          [...s.asteroids, ...spawned],
-        ),
-      );
-    }
-
-    s.asteroids.push(...spawned);
+    const decoys = pickDecoys(pool, pair, ROCKS_PER_BOARD - 1);
+    s.bullets = [];
+    s.asteroids = spawnRound(pair, decoys, { w: CANVAS_W, h: CANVAS_H }, s.ship);
+    rememberRound(pair, decoys);
+    s.invulnUntil = Math.max(s.invulnUntil, performance.now() + ADVANCE_INVULN_MS);
     resetRoundPressure(performance.now());
   }, [pool, resetRoundPressure, rememberRound]);
 
@@ -646,34 +686,40 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
 
       s.asteroids = reconcileAsteroidMerges(s.asteroids, { w: CANVAS_W, h: CANVAS_H }, now);
 
-      if (!advancingRef.current && now >= s.nextEnemySpawnAt && !s.enemy) {
+      if (!advancingRef.current && s.pendingSpawns.some((at) => now >= at)) {
         const answerWord = targetWordRef.current;
-        if (answerWord) {
-          s.enemy = spawnEnemy({ w: CANVAS_W, h: CANVAS_H }, answerWord);
-          s.nextEnemySpawnAt = now + ROUND_TIMEOUT_MS;
+        const waiting: number[] = [];
+        for (const at of s.pendingSpawns) {
+          if (now < at || !answerWord) {
+            waiting.push(at);
+            continue;
+          }
+          s.enemies.push(spawnEnemy({ w: CANVAS_W, h: CANVAS_H }, answerWord));
           if (!s.enemyWarningShown) {
             s.enemyWarningShown = true;
-            setFeedback(`Flying saucer inbound with "${answerWord}" — it fires one shot at a time. Shoot the matching asteroid yourself!`);
+            setFeedback(`Flying saucer inbound with "${answerWord}" — each ship fires one shot at a time. Shoot the matching asteroid yourself!`);
           }
         }
+        s.pendingSpawns = waiting;
       }
 
-      const enemy = s.enemy;
-      if (enemy) {
+      const staying: EnemyShip[] = [];
+      for (const enemy of s.enemies) {
         enemy.answerWord = targetWordRef.current || enemy.answerWord;
         enemy.x += enemy.vx;
         enemy.y = wrap(enemy.y + enemy.vy, CANVAS_H);
-
-        const offScreen = enemy.x < -42 || enemy.x > CANVAS_W + 42;
-        if (offScreen) {
-          s.enemy = null;
-        } else if (
-          now - enemy.lastShot > ENEMY_FIRE_COOLDOWN
-          && s.enemyBullets.length === 0
-        ) {
+        if (enemy.x < -42 || enemy.x > CANVAS_W + 42) continue;
+        const hasOwnBullet = s.enemyBullets.some((bullet) => bullet.ownerId === enemy.id);
+        if (now - enemy.lastShot > ENEMY_FIRE_COOLDOWN && !hasOwnBullet) {
           enemy.lastShot = now;
           fireSaucerShot(enemy, s.enemyBullets);
         }
+        staying.push(enemy);
+      }
+      const departed = s.enemies.length - staying.length;
+      s.enemies = staying;
+      for (let i = 0; i < departed; i++) {
+        queueSaucerReplacement(s.pendingSpawns, now, roundRef.current, s.enemies.length);
       }
 
       s.enemyBullets = s.enemyBullets
@@ -737,13 +783,18 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
 
       const destroyed: string[] = [];
       const playerBounds = { w: CANVAS_W, h: CANVAS_H };
+      let roundCleared = false;
       for (const b of s.bullets) {
-        if (b.life <= 0) continue;
+        if (roundCleared || b.life <= 0) continue;
 
-        if (s.enemy && dist(b.x, b.y, s.enemy.x, s.enemy.y) < saucerCollisionRadius(s.enemy.size)) {
-          const points = saucerDestroyPoints(s.enemy.size);
+        const enemyIndex = s.enemies.findIndex(
+          (enemy) => dist(b.x, b.y, enemy.x, enemy.y) < saucerCollisionRadius(enemy.size),
+        );
+        if (enemyIndex >= 0) {
+          const points = saucerDestroyPoints(s.enemies[enemyIndex].size);
           b.life = 0;
-          s.enemy = null;
+          s.enemies.splice(enemyIndex, 1);
+          queueSaucerReplacement(s.pendingSpawns, now, roundRef.current, s.enemies.length);
           setScore((sc) => sc + points);
           setFeedback(`Saucer destroyed (+${points}) — shoot the answer asteroid to complete the round.`);
           continue;
@@ -763,9 +814,11 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
               s.asteroids = s.asteroids.filter(
                 (ast) => !(ast.isTarget && ast.word === answerWord),
               );
-              s.enemy = null;
+              s.enemies = [];
+              s.pendingSpawns = [];
               s.enemyBullets = [];
               goToNextRound(orderRef.current);
+              roundCleared = true;
             } else if (a.splitGeneration < MAX_ASTEROID_SPLIT_GENERATION) {
               const fragments = splitAsteroid(a, playerBounds, now);
               if (fragments.length > 0) {
@@ -842,8 +895,7 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
         ctx.fill();
       }
 
-      if (s.enemy) {
-        const hostile = s.enemy;
+      for (const hostile of s.enemies) {
         ctx.save();
         ctx.translate(hostile.x, hostile.y);
         drawClassicSaucer(ctx, hostile.size, hostile.vx >= 0);
@@ -1025,7 +1077,7 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
           <p><strong>Controls:</strong> On a keyboard, ← → or A/D rotate, ↑ or W thrust, Space or J fire. On a tablet, use the Left, Thrust, Right, and Fire buttons.</p>
           <p className="match-hint">
             {pool.length} acronyms in this group
-            {customTermCount > 0 ? `, plus ${customTermCount} custom` : ''}. A round puts {DECOYS_PER_ROUND + 1} large asteroids on screen. Wrong rocks split, and the gold saucer shows the answer if you wait. When the game ends, the list below has the meaning of every acronym that appeared.
+            {customTermCount > 0 ? `, plus ${customTermCount} custom` : ''}. Each board starts with 8 full rocks, and one of them is the acronym. A smaller group uses every acronym it has. Later boards bring the gold saucer in sooner, then add a second saucer. Each saucer starts on its own timer and fires one shot at a time. Wrong rocks split. When the game ends, the list below has the meaning of every acronym that appeared.
           </p>
           <button type="button" className="btn" onClick={startGame}>New Game</button>
         </div>
