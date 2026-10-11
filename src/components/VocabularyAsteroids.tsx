@@ -84,9 +84,6 @@ const ENEMY_BULLET_SPEED = 4.8;
 const MAX_BULLETS = 6;
 const FIRE_COOLDOWN = 220;
 const ENEMY_FIRE_COOLDOWN = 1500;
-const MAX_ENEMY_BULLETS = 16;
-const SAUCER_BURST_SPOKES = 8;
-const SAUCER_EXTRA_RANDOM_SHOTS = 1;
 const ROUND_TIMEOUT_MS = 18000;
 const ROUNDS_PER_GAME = 20;
 const MAX_ASTEROID_SPLIT_GENERATION = 4;
@@ -242,37 +239,18 @@ function damageAsteroidFromSaucer(
   return asteroids.filter((a) => a.id !== asteroid.id).concat(fragments);
 }
 
-/** Arcade-style spray: full 360° burst plus extra random shots (never aimed at the player). */
-function fireSaucerVolley(
-  enemy: EnemyShip,
-  bullets: EnemyBullet[],
-  maxBullets: number,
-): void {
-  const baseRotation = Math.random() * Math.PI * 2;
-  for (let i = 0; i < SAUCER_BURST_SPOKES; i++) {
-    if (bullets.length >= maxBullets) return;
-    const angle = baseRotation + (i / SAUCER_BURST_SPOKES) * Math.PI * 2;
-    bullets.push({
-      id: uid(),
-      x: enemy.x,
-      y: enemy.y,
-      vx: Math.cos(angle) * ENEMY_BULLET_SPEED,
-      vy: Math.sin(angle) * ENEMY_BULLET_SPEED,
-      life: 140,
-    });
-  }
-  for (let i = 0; i < SAUCER_EXTRA_RANDOM_SHOTS; i++) {
-    if (bullets.length >= maxBullets) return;
-    const angle = Math.random() * Math.PI * 2;
-    bullets.push({
-      id: uid(),
-      x: enemy.x,
-      y: enemy.y,
-      vx: Math.cos(angle) * ENEMY_BULLET_SPEED,
-      vy: Math.sin(angle) * ENEMY_BULLET_SPEED,
-      life: 140,
-    });
-  }
+/** One shot in a random direction. The saucer waits until that bullet is gone. */
+function fireSaucerShot(enemy: EnemyShip, bullets: EnemyBullet[]): void {
+  if (bullets.length > 0) return;
+  const angle = Math.random() * Math.PI * 2;
+  bullets.push({
+    id: uid(),
+    x: enemy.x,
+    y: enemy.y,
+    vx: Math.cos(angle) * ENEMY_BULLET_SPEED,
+    vy: Math.sin(angle) * ENEMY_BULLET_SPEED,
+    life: 140,
+  });
 }
 
 function splitAsteroid(asteroid: Asteroid, bounds: { w: number; h: number }, now: number): Asteroid[] {
@@ -675,7 +653,7 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
           s.nextEnemySpawnAt = now + ROUND_TIMEOUT_MS;
           if (!s.enemyWarningShown) {
             s.enemyWarningShown = true;
-            setFeedback(`Flying saucer inbound with "${answerWord}" — it sprays shots in all directions. Shoot the matching asteroid yourself!`);
+            setFeedback(`Flying saucer inbound with "${answerWord}" — it fires one shot at a time. Shoot the matching asteroid yourself!`);
           }
         }
       }
@@ -691,10 +669,10 @@ export default function VocabularyAsteroids({ flashcards, questions }: Props) {
           s.enemy = null;
         } else if (
           now - enemy.lastShot > ENEMY_FIRE_COOLDOWN
-          && s.enemyBullets.length < MAX_ENEMY_BULLETS
+          && s.enemyBullets.length === 0
         ) {
           enemy.lastShot = now;
-          fireSaucerVolley(enemy, s.enemyBullets, MAX_ENEMY_BULLETS);
+          fireSaucerShot(enemy, s.enemyBullets);
         }
       }
 
